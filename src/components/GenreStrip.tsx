@@ -15,7 +15,7 @@ export default function GenreStrip() {
 
   if (state.loading) {
     return (
-      <div className="mx-auto max-w-7xl px-4 pt-8 sm:px-6" aria-hidden="true">
+      <div className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 sm:pt-8" aria-hidden="true">
         <div className="h-6 w-40 animate-pulse rounded bg-haze/40" />
         <div className="mt-4 flex flex-wrap gap-2">
           {Array.from({ length: 8 }, (_, index) => (
@@ -38,7 +38,7 @@ export default function GenreStrip() {
   if (genres.length === 0) return null;
 
   return (
-    <section aria-labelledby="genre-utama" className="mx-auto max-w-7xl px-4 pt-8 sm:px-6">
+    <section aria-labelledby="genre-utama" className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 sm:pt-8">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <h2 id="genre-utama" className="text-balance font-display text-xl font-bold tracking-tight sm:text-2xl">
           {copy.home.genresHeading}
@@ -50,7 +50,7 @@ export default function GenreStrip() {
           {copy.common.seeAll}
         </Link>
       </div>
-      <ul className="mt-4 flex flex-wrap gap-2">
+      <ul className="mt-3 flex flex-wrap gap-2 sm:mt-4">
         {genres.map((genre) => (
           <li key={genre.id}>
             <Link to={`/katalog?genre=${genre.id}`} className="chip chip-idle">

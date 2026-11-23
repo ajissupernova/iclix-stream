@@ -66,8 +66,8 @@ export default function MediaRow({
   const frame = inset ? "" : "mx-auto max-w-7xl px-4 sm:px-6";
 
   return (
-    <section aria-label={title} className="py-7 sm:py-8">
-      <div className={`${frame} flex items-end justify-between gap-4`}>
+    <section aria-label={title} className="py-5 sm:py-8">
+      <div className={`${frame} flex items-end justify-between gap-3`}>
         <div className="flex items-baseline gap-4">
           <Heading className="text-balance font-display text-xl font-bold tracking-tight sm:text-[1.65rem]">
             {title}
@@ -115,12 +115,12 @@ export default function MediaRow({
         <div className="relative mt-4">
           <ul
             ref={scroller}
-            className={`no-scrollbar flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 ${
+            className={`no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 sm:gap-4 ${
               inset ? "" : "mx-auto max-w-7xl px-4 sm:px-6"
             }`}
           >
             {items.map((item, index) => (
-              <li key={`${item.mediaType}-${item.id}`} className="w-36 shrink-0 snap-start sm:w-44 lg:w-48">
+              <li key={`${item.mediaType}-${item.id}`} className="w-32 shrink-0 snap-start sm:w-44 lg:w-48">
                 <MediaCard item={item} rank={ranked ? index + 1 : undefined} />
               </li>
             ))}

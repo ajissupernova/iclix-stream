@@ -15,6 +15,12 @@ import WatchlistButton from "./WatchlistButton";
 
 const ROTATE_MS = 7000;
 
+function titleFor(item: HeroTitle) {
+  return item.mediaType === "movie"
+    ? preferredTitle(item.title, item.original_title, item.original_language)
+    : preferredTitle(item.name, item.original_name, item.original_language);
+}
+
 export default function HeroCarousel({ items }: { items: HeroTitle[] }) {
   const { copy } = useLanguage();
   const [index, setIndex] = useState(0);
@@ -23,9 +29,11 @@ export default function HeroCarousel({ items }: { items: HeroTitle[] }) {
   const reducedMotion = usePrefersReducedMotion();
 
   const active = items[Math.min(index, items.length - 1)];
-  const title = active.mediaType === "movie"
-    ? preferredTitle(active.title, active.original_title, active.original_language)
-    : preferredTitle(active.name, active.original_name, active.original_language);
+  const title = titleFor(active);
+
+  useEffect(() => {
+    setIndex((current) => Math.min(current, items.length - 1));
+  }, [items.length]);
 
   useEffect(() => {
     if (!autoPlay || paused || reducedMotion || items.length < 2) return;
@@ -43,7 +51,7 @@ export default function HeroCarousel({ items }: { items: HeroTitle[] }) {
     <section
       aria-label={copy.hero.label}
       aria-roledescription="carousel"
-      className="relative isolate flex min-h-[500px] items-end overflow-hidden sm:min-h-[590px]"
+      className="relative isolate flex min-h-[420px] items-end overflow-hidden sm:min-h-[590px]"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocusCapture={() => setPaused(true)}
@@ -70,7 +78,7 @@ export default function HeroCarousel({ items }: { items: HeroTitle[] }) {
         <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-night via-night/70 to-transparent" />
       </div>
 
-      <div className="hero-copy mx-auto w-full max-w-7xl px-4 pb-12 pt-20 sm:px-6 sm:pb-16">
+      <div className="hero-copy mx-auto w-full max-w-7xl px-4 pb-8 pt-24 sm:px-6 sm:pb-16 sm:pt-20">
         {active.tagline && (
           <p className="max-w-xl text-sm italic text-paper/85 sm:text-base">{active.tagline}</p>
         )}
@@ -92,7 +100,7 @@ export default function HeroCarousel({ items }: { items: HeroTitle[] }) {
           )}
         </h1>
 
-        <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm">
+        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm sm:mt-4 sm:gap-x-4">
           {active.vote_average > 0 && (
             <span className="inline-flex items-center gap-1.5 font-semibold text-gold">
               <svg viewBox="0 0 20 20" className="h-4 w-4" fill="currentColor" aria-hidden="true">
@@ -101,18 +109,18 @@ export default function HeroCarousel({ items }: { items: HeroTitle[] }) {
               {active.vote_average.toFixed(1)}
             </span>
           )}
-          <p className="text-paper/90">{[year, runtime, genres].filter(Boolean).join(" • ")}</p>
+          <p className="max-w-full text-paper/90">{[year, runtime, genres].filter(Boolean).join(" • ")}</p>
           <span className="text-paper/85">
             {copy.hero.originalLanguage}: {formatLanguage(active.original_language)}
           </span>
         </div>
 
         {active.overview && (
-          <p className="mt-4 line-clamp-3 max-w-xl leading-relaxed text-paper/95">{active.overview}</p>
+          <p className="mt-3 line-clamp-2 max-w-xl leading-relaxed text-paper/95 sm:mt-4 sm:line-clamp-3">{active.overview}</p>
         )}
         <TextLocaleNote locale={active.textLocale} className="mt-2 max-w-xl" />
 
-        <div className="mt-7 flex flex-wrap items-center gap-3">
+        <div className="mt-5 flex flex-wrap items-center gap-2.5 sm:mt-7 sm:gap-3">
           <Link
             to={active.mediaType === "movie" ? `/film/${active.id}` : `/serial/${active.id}`}
             className="btn-primary"
@@ -123,17 +131,14 @@ export default function HeroCarousel({ items }: { items: HeroTitle[] }) {
           <WatchlistButton item={{ id: active.id, mediaType: active.mediaType }} title={title} />
         </div>
 
-        <div className="mt-8 flex items-center gap-4">
-          <ul className="flex items-center gap-2">
-            {items.map((movie, i) => (              <li key={movie.id}>
+        <div className="mt-5 flex items-center gap-3 sm:mt-8 sm:gap-4">
+          <ul className="hidden items-center gap-2 sm:flex">
+            {items.map((movie, i) => (
+              <li key={`${movie.mediaType}-${movie.id}`}>
                 <button
                   type="button"
                   onClick={() => setIndex(i)}
-                  aria-label={copy.hero.show(
-                    movie.mediaType === "movie"
-                      ? preferredTitle(movie.title, movie.original_title, movie.original_language)
-                      : preferredTitle(movie.name, movie.original_name, movie.original_language),
-                  )}
+                  aria-label={copy.hero.show(titleFor(movie))}
                   aria-current={i === index}
                   className="flex h-11 w-11 items-center justify-center"
                 >
@@ -144,6 +149,29 @@ export default function HeroCarousel({ items }: { items: HeroTitle[] }) {
               </li>
             ))}
           </ul>
+          {items.length > 1 && (
+            <div className="flex items-center gap-2 sm:hidden">
+              <button
+                type="button"
+                onClick={() => setIndex((current) => (current - 1 + items.length) % items.length)}
+                aria-label={copy.hero.show(titleFor(items[(index - 1 + items.length) % items.length]))}
+                className="icon-btn"
+              >
+                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+              </button>
+              <span className="min-w-12 text-center text-sm tabular-nums text-paper/90" aria-live="polite">
+                {index + 1} / {items.length}
+              </span>
+              <button
+                type="button"
+                onClick={() => setIndex((current) => (current + 1) % items.length)}
+                aria-label={copy.hero.show(titleFor(items[(index + 1) % items.length]))}
+                className="icon-btn"
+              >
+                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
+              </button>
+            </div>
+          )}
           <button
             type="button"
             onClick={() => setAutoPlay((v) => !v)}

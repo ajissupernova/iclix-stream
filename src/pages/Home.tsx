@@ -22,15 +22,20 @@ function itemsOf<T extends { id: number }>(state: UseApiState<TmdbPage<T>>, medi
 export default function Home() {
   const { lang, copy } = useLanguage();
   const [siteContent, setSiteContent] = useState<SiteContent>(DEFAULT_SITE_CONTENT);
+  const [siteContentLoaded, setSiteContentLoaded] = useState(false);
   useEffect(() => {
     let active = true;
     const refresh = () => {
       fetch("/api/site-content")
         .then((response) => (response.ok ? response.json() : null))
         .then((result) => {
-          if (active && result?.content) setSiteContent(result.content as SiteContent);
+          if (!active) return;
+          if (result?.content) setSiteContent(result.content as SiteContent);
+          setSiteContentLoaded(true);
         })
-        .catch(() => undefined);
+        .catch(() => {
+          if (active) setSiteContentLoaded(true);
+        });
     };
     const refreshWhenVisible = () => {
       if (document.visibilityState === "visible") refresh();
@@ -89,19 +94,19 @@ export default function Home() {
 
   return (
     <>
-      {siteContent.announcement.enabled && siteContent.announcement.text && (
+      {siteContentLoaded && siteContent.announcement.enabled && siteContent.announcement.text && (
         <aside className="border-b border-line bg-dusk px-4 py-3 text-center text-sm text-paper" role="status">
           {siteContent.announcement.text}
         </aside>
       )}
-      {showHero && <HeroCarousel items={hero.items} />}
-      {!showHero && heroLoading && <HeroSkeleton />}
-      {!showHero && !configMissing && !heroLoading && heroError && (
+      {siteContentLoaded && showHero && <HeroCarousel items={hero.items} />}
+      {(!siteContentLoaded || (!showHero && heroLoading)) && <HeroSkeleton />}
+      {siteContentLoaded && !showHero && !configMissing && !heroLoading && heroError && (
         <div className="mx-auto max-w-3xl px-4 pt-10">
           <ErrorState message={heroError} code={heroErrorCode} onRetry={trending.reload} />
         </div>
       )}
-      {!showHero && configMissing && (
+      {siteContentLoaded && !showHero && configMissing && (
         <div className="mx-auto max-w-3xl px-4 pt-10">
           <ErrorState
             message={heroError ?? copy.home.noKey}
@@ -114,7 +119,7 @@ export default function Home() {
       <GenreStrip />
 
       <div>
-        {visibleHomeSections.map((section) => {
+        {siteContentLoaded && visibleHomeSections.map((section) => {
           if (section.kind === "collection-group") {
             const group = collectionGroups.find((item) => item.id === section.groupId);
             if (!group) return null;
