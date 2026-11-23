@@ -116,7 +116,7 @@ export const api = {
     tmdbFetch<TvDetail>(
       `/tv/${id}`,
       {
-        append_to_response: "credits,videos,similar,recommendations,content_ratings,images",
+        append_to_response: "credits,videos,similar,recommendations,content_ratings,images,external_ids",
         include_video_language: "en,null",
         // Logo judul jarang ada versi Indonesia, jadi ambil Inggris dan yang netral bahasa.
         include_image_language: "en,null,id",

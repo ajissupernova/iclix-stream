@@ -205,6 +205,7 @@ export interface TvDetail {
   recommendations?: TmdbPage<TvListItem>;
   content_ratings?: { results: Array<{ iso_3166_1: string; rating: string }> };
   images?: { logos: ImageAsset[] };
+  external_ids?: { imdb_id: string | null };
 }
 
 export interface PersonDetail {
@@ -265,4 +266,12 @@ export interface TmdbConfiguration {
     profile_sizes: string[];
     still_sizes: string[];
   };
+  
+  external_ids?: {
+  imdb_id: string | null;
+  freebase_mid: string | null;
+  freebase_id: string | null;
+  tvdb_id: number | null;
+  tvrage_id: number | null;
+};
 }
