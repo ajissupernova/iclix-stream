@@ -14,6 +14,7 @@ export default function handler(req: IncomingMessage, res: ServerResponse): void
   const originalPath = requestUrl.searchParams.get("__vercel_route_path");
   if (originalPath) {
     requestUrl.searchParams.delete("__vercel_route_path");
+    requestUrl.searchParams.delete("path");
     const query = requestUrl.searchParams.toString();
     req.url = `/api${originalPath}${query ? `?${query}` : ""}`;
   }
