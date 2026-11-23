@@ -79,7 +79,7 @@ export default function HeroCarousel({ items }: { items: HeroTitle[] }) {
         {items.map((movie, i) => {
           const isActive = movie.mediaType === active.mediaType && movie.id === active.id;
           const backdrop = isActive ? desktopBackdrop : movie.backdrop_path;
-          const mobile = isActive && mobileBackdrop !== desktopBackdrop ? backdropUrl(mobileBackdrop, false) : null;
+          const mobile = isActive && mobileBackdrop !== desktopBackdrop ? heroBackdropUrl(mobileBackdrop) : null;
           return (
             <div
               key={`${movie.mediaType}-${movie.id}`}
