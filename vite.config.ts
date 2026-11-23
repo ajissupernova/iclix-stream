@@ -23,5 +23,6 @@ function tmdbApi(): Plugin {
 }
 
 export default defineConfig({
+  base: "/iclix/",
   plugins: [react(), tmdbApi()],
 });
