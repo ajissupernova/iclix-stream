@@ -1,0 +1,119 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  button:enabled,
+  a[href],
+  select:enabled,
+  input[type="checkbox"]:enabled,
+  input[type="radio"]:enabled,
+  input[type="range"]:enabled,
+  label[for],
+  label:has(> input[type="checkbox"]),
+  label:has(> input[type="radio"]) {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  select:disabled,
+  input:disabled {
+    cursor: not-allowed;
+  }
+
+  html {
+    background-color: #0d0b1b;
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-night font-sans text-paper antialiased;
+  }
+
+  ::selection {
+    background-color: rgba(169, 155, 255, 0.3);
+    color: #f4f2ff;
+  }
+
+  :focus-visible {
+    outline: 2px solid #c0b5ff;
+    outline-offset: 3px;
+  }
+
+  dialog::backdrop {
+    background-color: rgba(9, 8, 26, 0.82);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-clix px-6 py-2.5 text-sm font-semibold text-night transition duration-200 ease-out hover:brightness-110 active:bg-clixDeep active:scale-[0.98];
+  }
+
+  .btn-secondary {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-line bg-dusk px-6 py-2.5 text-sm font-semibold text-paper transition duration-200 ease-out hover:border-lineStrong hover:bg-panel active:scale-[0.98];
+  }
+
+  .btn-quiet {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold text-mist transition duration-150 hover:bg-panel hover:text-paper active:scale-[0.98];
+  }
+
+  .icon-btn {
+    @apply inline-flex h-11 w-11 items-center justify-center rounded-full border border-line text-mist transition duration-150 hover:border-lineStrong hover:bg-panel hover:text-paper active:scale-95;
+  }
+
+  .chip {
+    @apply inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full px-4 text-sm font-medium transition duration-150 active:scale-[0.98];
+  }
+
+  .chip-active {
+    @apply bg-clix text-night;
+  }
+
+  .chip-idle {
+    @apply bg-dusk text-mist hover:bg-panel hover:text-paper;
+  }
+
+  .panel {
+    @apply rounded-panel border border-line bg-dusk;
+  }
+
+  .media-poster img {
+    transition: transform 220ms ease-out, opacity 500ms ease-out;
+  }
+
+  .group:hover .media-poster img {
+    transform: scale(1.04);
+  }
+}
+
+@layer utilities {
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Foto hero dibiarkan tanpa lapisan gradient, jadi kontras teks dijaga lewat bayangan tipis. */
+  .hero-copy {
+    text-shadow:
+      0 0 3px rgba(9, 8, 26, 0.95),
+      0 1px 3px rgba(9, 8, 26, 0.95),
+      0 2px 24px rgba(9, 8, 26, 0.7);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .media-poster img {
+      transition: none;
+    }
+  }
+}

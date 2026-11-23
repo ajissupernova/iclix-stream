@@ -1,0 +1,19 @@
+{
+  "name": "iClix",
+  "short_name": "iClix",
+  "description": "Temukan film dan serial TV, baca detailnya, dan simpan judul favorit Anda.",
+  "lang": "id",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0F0E24",
+  "theme_color": "#0F0E24",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
