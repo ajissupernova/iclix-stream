@@ -111,6 +111,10 @@
       0 2px 24px rgba(9, 8, 26, 0.7);
   }
 
+  .hero-copy .btn-primary {
+    text-shadow: none;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .media-poster img {
       transition: none;

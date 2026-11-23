@@ -51,7 +51,7 @@ export default function HeroCarousel({ items }: { items: HeroTitle[] }) {
     <section
       aria-label={copy.hero.label}
       aria-roledescription="carousel"
-      className="relative isolate flex min-h-[420px] items-end overflow-hidden sm:min-h-[590px]"
+      className="relative isolate flex min-h-[560px] items-end overflow-hidden sm:min-h-[680px]"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocusCapture={() => setPaused(true)}
@@ -79,20 +79,26 @@ export default function HeroCarousel({ items }: { items: HeroTitle[] }) {
       </div>
 
       <div className="hero-copy mx-auto w-full max-w-7xl px-4 pb-8 pt-24 sm:px-6 sm:pb-16 sm:pt-20">
-        {active.tagline && (
-          <p className="max-w-xl text-sm italic text-paper/85 sm:text-base">{active.tagline}</p>
-        )}
+        <p className="hero-tagline max-w-xl text-sm italic text-paper/85 sm:text-base">
+          {active.tagline || "\u00a0"}
+        </p>
 
-        <h1 className="mt-4">
+        <h1 className="mt-4 flex h-[4.5rem] items-center sm:h-28 lg:h-32">
           {logo ? (
-            <img
-              src={logoUrl(logo.file_path) ?? undefined}
-              alt={title}
-              width={logo.width}
-              height={logo.height}
-              decoding="async"
-              className="h-auto max-h-[4.5rem] w-auto max-w-full object-contain object-left drop-shadow-[0_2px_14px_rgba(9,8,26,0.9)] sm:max-h-28 lg:max-h-32"
-            />
+            <Link
+              to={active.mediaType === "movie" ? `/film/${active.id}` : `/serial/${active.id}`}
+              aria-label={`${title} - ${copy.hero.details}`}
+              className="inline-flex max-h-full max-w-full items-center rounded-sm"
+            >
+              <img
+                src={logoUrl(logo.file_path) ?? undefined}
+                alt=""
+                width={logo.width}
+                height={logo.height}
+                decoding="async"
+                className="h-auto max-h-[4.5rem] w-auto max-w-full object-contain object-left drop-shadow-[0_2px_14px_rgba(9,8,26,0.9)] sm:max-h-28 lg:max-h-32"
+              />
+            </Link>
           ) : (
             <span className="block max-w-3xl font-display text-4xl font-extrabold leading-[0.95] tracking-tight sm:text-6xl lg:text-7xl">
               {title}
@@ -115,10 +121,10 @@ export default function HeroCarousel({ items }: { items: HeroTitle[] }) {
           </span>
         </div>
 
-        {active.overview && (
-          <p className="mt-3 line-clamp-2 max-w-xl leading-relaxed text-paper/95 sm:mt-4 sm:line-clamp-3">{active.overview}</p>
-        )}
-        <TextLocaleNote locale={active.textLocale} className="mt-2 max-w-xl" />
+        <p className="mt-3 h-[3rem] max-w-xl line-clamp-2 leading-relaxed text-paper/95 sm:mt-4 sm:h-[4.5rem] sm:line-clamp-3">
+          {active.overview || "\u00a0"}
+        </p>
+        <div className="mt-2 min-h-5 max-w-xl"><TextLocaleNote locale={active.textLocale} /></div>
 
         <div className="mt-5 flex flex-wrap items-center gap-2.5 sm:mt-7 sm:gap-3">
           <Link
