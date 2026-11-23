@@ -13,9 +13,9 @@ const config: Config = {
         lineStrong: "#51496D",
         mist: "#C1BDD3",
         paper: "#F6F3FF",
-        // Aksen utama: teal bioskop. Dipakai hanya untuk aksi, filter aktif, focus, dan status tersimpan.
-        clix: "#A99BFF",
-        clixDeep: "#8D7DEB",
+        // Aksen merah untuk aksi utama dan status aktif.
+        clix: "#C82333",
+        clixDeep: "#A61E2A",
         // Rating tetap emas supaya angka skor tidak bersaing dengan aksi.
         gold: "#FFC83D",
         // Pink hanya untuk titik huruf "i" pada wordmark.

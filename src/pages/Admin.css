@@ -47,12 +47,12 @@
 
 .admin-nav-item[aria-current="page"] {
   background: #292442;
-  box-shadow: inset 3px 0 #a99bff;
+  box-shadow: inset 3px 0 #c82333;
   color: #f4f2ff;
 }
 
 .admin-nav-item:focus-visible {
-  outline: 2px solid #c0b5ff;
+  outline: 2px solid #c82333;
   outline-offset: 2px;
 }
 
@@ -76,7 +76,7 @@
 }
 
 .admin-page-heading > p:first-child {
-  color: #c0b5ff;
+  color: #c82333;
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -121,7 +121,7 @@
 .admin-shell input:focus-visible,
 .admin-shell textarea:focus-visible,
 .admin-shell select:focus-visible {
-  border-color: #a99bff;
+  border-color: #c82333;
 }
 
 .admin-shell .btn-primary,
@@ -169,7 +169,7 @@
 .admin-auth-shell button:focus-visible,
 .admin-auth-shell a:focus-visible,
 .admin-auth-shell input:focus-visible {
-  outline: 2px solid #c0b5ff;
+  outline: 2px solid #c82333;
   outline-offset: 3px;
 }
 
