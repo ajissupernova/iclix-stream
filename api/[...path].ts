@@ -10,6 +10,14 @@ export const config = {
 };
 
 export default function handler(req: IncomingMessage, res: ServerResponse): void {
+  const requestUrl = new URL(req.url || "/", "http://localhost");
+  const originalPath = requestUrl.searchParams.get("__vercel_route_path");
+  if (originalPath) {
+    requestUrl.searchParams.delete("__vercel_route_path");
+    const query = requestUrl.searchParams.toString();
+    req.url = `${originalPath}${query ? `?${query}` : ""}`;
+  }
+
   createTranslateHandler(req, res, () =>
     createSiteContentHandler(req, res, () =>
       createApiHandler(req, res, () => {
