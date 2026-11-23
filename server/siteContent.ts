@@ -160,6 +160,11 @@ function send(res: ServerResponse, status: number, body: unknown): void {
 }
 
 async function readBody(req: IncomingMessage): Promise<unknown> {
+  const parsedBody = (req as IncomingMessage & { body?: unknown }).body;
+  if (parsedBody !== undefined) {
+    return typeof parsedBody === "string" ? JSON.parse(parsedBody) : parsedBody;
+  }
+
   let size = 0;
   const chunks: Buffer[] = [];
   for await (const chunk of req) {

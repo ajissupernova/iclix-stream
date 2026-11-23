@@ -5,7 +5,9 @@ import { createTranslateHandler } from "../server/translate.js";
 
 export const config = {
   api: {
-    bodyParser: false,
+    bodyParser: {
+      sizeLimit: "4.5mb",
+    },
   },
 };
 
