@@ -41,9 +41,6 @@ type SeasonView = {
   englishNames: boolean;
 };
 
-const VIDFAST_PARAMS =
-  "autoPlay=true&title=true&poster=true&theme=16A085&nextButton=true&autoNext=true";
-
 export default function TvDetail() {
   const { id } = useParams<{ id: string }>();
   const { lang, isEn, copy } = useLanguage();
@@ -236,7 +233,7 @@ export default function TvDetail() {
   const targetId = show.external_ids?.imdb_id || show.id;
   const embedUrl =
     targetId && seasonNumber !== null
-      ? `https://vidfast.vc/tv/${targetId}/${seasonNumber}/${activeEpisodeNumber}?${VIDFAST_PARAMS}`
+      ? `https://embedmaster.link/tv/${targetId}/${seasonNumber}/${activeEpisodeNumber}`
       : null;
 
   const crew = show.credits?.crew ?? [];

@@ -5,12 +5,33 @@ interface Props {
   title: string;
   src?: string | null;
   subtitleSrc?: string | null;
+  subtitleLabel?: string;
   backdropSrc?: string | null;
   embedUrl?: string | null;
 }
 
-export default function MoviePlayer({ title, src, subtitleSrc, backdropSrc, embedUrl }: Props) {
+export default function MoviePlayer({
+  title,
+  src,
+  subtitleSrc,
+  subtitleLabel,
+  backdropSrc,
+  embedUrl,
+}: Props) {
   const { copy } = useLanguage();
+  const iframeUrl = embedUrl
+    ? new URL(embedUrl)
+    : null;
+
+  if (iframeUrl) {
+    iframeUrl.searchParams.set("skin", "onyx");
+    iframeUrl.searchParams.set("welcome_page", "off");
+    iframeUrl.searchParams.set("autoplay", "on");
+    if (subtitleSrc) {
+      iframeUrl.searchParams.append("sub_url[]", subtitleSrc);
+      iframeUrl.searchParams.append("sub_label[]", subtitleLabel || copy.movie.indonesianSubtitles);
+    }
+  }
 
   return (
     <section
@@ -30,12 +51,12 @@ export default function MoviePlayer({ title, src, subtitleSrc, backdropSrc, embe
         <div className="aspect-video overflow-hidden rounded-panel border border-line bg-black">
           {embedUrl ? (
             <iframe
-              key={embedUrl}
-              src={embedUrl}
+              key={iframeUrl?.toString()}
+              src={iframeUrl?.toString()}
               title={copy.movie.playerFor(title)}
               width="100%"
               height="100%"
-              allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+              allow="autoplay *; fullscreen *; picture-in-picture *; encrypted-media *"
               allowFullScreen
               referrerPolicy="origin"
               className="h-full w-full border-0"

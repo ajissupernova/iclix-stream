@@ -3,7 +3,11 @@ dist/
 dist-server/
 .env
 .env.local
+.env.*
+!.env.example
 .data/
 *.local
 .DS_Store
 *.log
+.vercel/
+coverage/

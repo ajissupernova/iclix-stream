@@ -36,9 +36,6 @@ import { pickTrailerKey } from "../utils/trailer";
 type MovieView = MovieDetail & { textLocale?: TextLocaleInfo };
 
 const WRITER_JOBS = new Set(["Screenplay", "Writer", "Story", "Characters", "Teleplay"]);
-const VIDFAST_PARAMS =
-  "autoPlay=true&title=true&poster=true&theme=16A085&nextButton=true&autoNext=true";
-
 function uniquePeople(people: CrewMember[]): CrewMember[] {
   const seen = new Set<number>();
   return people.filter((p) => {
@@ -145,9 +142,7 @@ export default function MovieDetail() {
   }
 
   const targetId = movie.imdb_id || movie.id;
-  const embedUrl = targetId
-    ? `https://vidfast.vc/movie/${targetId}?${VIDFAST_PARAMS}`
-    : null;
+  const embedUrl = targetId ? `https://embedmaster.link/movie/${targetId}` : null;
   const crew = movie.credits?.crew ?? [];
   const cast = movie.credits?.cast ?? [];
   const directors = uniquePeople(crew.filter((c) => c.job === "Director"));
