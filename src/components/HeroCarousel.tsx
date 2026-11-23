@@ -21,6 +21,22 @@ function titleFor(item: HeroTitle) {
     : preferredTitle(item.name, item.original_name, item.original_language);
 }
 
+function pickBackdrop(
+  candidates: NonNullable<HeroTitle["images"]>["backdrops"],
+  targetRatio: number,
+  excludedPath?: string | null,
+) {
+  const available = candidates?.filter((image) => image.file_path !== excludedPath) ?? [];
+  return available.reduce<(typeof available)[number] | null>((best, image) => {
+    const ratio = image.aspect_ratio || image.width / image.height;
+    const score = Math.abs(Math.log(ratio / targetRatio)) - Math.min(image.vote_average, 10) * 0.002;
+    if (!best) return image;
+    const bestRatio = best.aspect_ratio || best.width / best.height;
+    const bestScore = Math.abs(Math.log(bestRatio / targetRatio)) - Math.min(best.vote_average, 10) * 0.002;
+    return score < bestScore ? image : best;
+  }, null)?.file_path ?? null;
+}
+
 export default function HeroCarousel({ items }: { items: HeroTitle[] }) {
   const { copy } = useLanguage();
   const [index, setIndex] = useState(0);
@@ -43,6 +59,8 @@ export default function HeroCarousel({ items }: { items: HeroTitle[] }) {
 
   const trailerKey = useMemo(() => pickTrailerKey(active.videos?.results), [active]);
   const logo = useMemo(() => pickTitleLogo(active.images?.logos), [active]);
+  const desktopBackdrop = pickBackdrop(active.images?.backdrops, 1.78) ?? active.backdrop_path;
+  const mobileBackdrop = pickBackdrop(active.images?.backdrops, 0.82, desktopBackdrop) ?? desktopBackdrop;
   const year = formatYear(active.mediaType === "movie" ? active.release_date : active.first_air_date);
   const runtime = formatDuration(active.mediaType === "movie" ? active.runtime : active.episode_run_time[0] ?? null);
   const genres = active.genres.map((g) => g.name).join(", ");
@@ -58,22 +76,28 @@ export default function HeroCarousel({ items }: { items: HeroTitle[] }) {
       onBlurCapture={() => setPaused(false)}
     >
       <div className="absolute inset-0 -z-10">
-        {items.map((movie, i) => (
-          <div
+        {items.map((movie, i) => {
+          const isActive = movie.mediaType === active.mediaType && movie.id === active.id;
+          const backdrop = isActive ? desktopBackdrop : movie.backdrop_path;
+          const mobile = isActive && mobileBackdrop !== desktopBackdrop ? backdropUrl(mobileBackdrop, false) : null;
+          return (
+            <div
               key={`${movie.mediaType}-${movie.id}`}
-            aria-hidden={i !== index}
-            className={`absolute inset-0 transition-opacity duration-700 ${i === index ? "opacity-100" : "opacity-0"}`}
-          >
-            <TmdbImage
-              kind="backdrop"
-              fill
-              eager={i === 0}
-              src={backdropUrl(movie.backdrop_path)}
-              highResSrc={heroBackdropUrl(movie.backdrop_path)}
-              alt={i === index ? copy.common.backdropAlt(title) : ""}
-            />
-          </div>
-        ))}
+              aria-hidden={i !== index}
+              className={`absolute inset-0 transition-opacity duration-700 ${i === index ? "opacity-100" : "opacity-0"}`}
+            >
+              <TmdbImage
+                kind="backdrop"
+                fill
+                eager={i === 0}
+                src={backdropUrl(backdrop)}
+                mobileSrc={mobile}
+                highResSrc={heroBackdropUrl(backdrop)}
+                alt={i === index ? copy.common.backdropAlt(title) : ""}
+              />
+            </div>
+          );
+        })}
         <div className="absolute inset-0 bg-gradient-to-r from-night/85 via-night/35 to-transparent max-sm:bg-gradient-to-b max-sm:from-night/0 max-sm:via-night/30 max-sm:to-night/85" />
         <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-night via-night/70 to-transparent max-sm:h-48 max-sm:from-night/90 max-sm:via-night/45 max-sm:to-transparent" />
       </div>

@@ -13,6 +13,8 @@ interface Props {
   fill?: boolean;
   /** Versi resolusi penuh yang dipakai browser hanya pada layar lebar. */
   highResSrc?: string | null;
+  /** Artwork alternatif yang dipilih khusus untuk layar kecil. */
+  mobileSrc?: string | null;
   /** Lebar viewport minimum (px) untuk memakai highResSrc. */
   highResFrom?: number;
   /** Daftar kandidat gambar untuk srcset, misalnya poster w185/w342/w500. */
@@ -47,6 +49,7 @@ export default function TmdbImage({
   eager = false,
   fill = false,
   highResSrc = null,
+  mobileSrc = null,
   highResFrom = 1280,
   srcSet = null,
   sizes,
@@ -75,21 +78,21 @@ export default function TmdbImage({
     />
   );
 
+  const responsiveImage = mobileSrc || useHighRes ? (
+    <picture>
+      {mobileSrc && <source media="(max-width: 639px)" srcSet={mobileSrc} />}
+      {useHighRes && <source media={`(min-width: ${highResFrom}px)`} srcSet={highResSrc as string} />}
+      {image}
+    </picture>
+  ) : image;
+
   return (
     <div className={`relative overflow-hidden bg-dusk ${frame} ${className}`}>
       {!showImage && <Placeholder alt={alt} />}
       {showImage && !loaded && (
         <div className="absolute inset-0 animate-pulse bg-haze/40" aria-hidden="true" />
       )}
-      {showImage &&
-        (useHighRes ? (
-          <picture>
-            <source media={`(min-width: ${highResFrom}px)`} srcSet={highResSrc as string} />
-            {image}
-          </picture>
-        ) : (
-          image
-        ))}
+      {showImage && responsiveImage}
     </div>
   );
 }

@@ -143,7 +143,7 @@ export interface MovieDetail {
   recommendations?: TmdbPage<MovieListItem>;
   keywords?: { keywords: Keyword[] };
   release_dates?: { results: ReleaseDate[] };
-  images?: { logos: ImageAsset[] };
+  images?: { logos: ImageAsset[]; backdrops?: ImageAsset[] };
 }
 
 export interface SeasonSummary {
@@ -204,7 +204,7 @@ export interface TvDetail {
   similar?: TmdbPage<TvListItem>;
   recommendations?: TmdbPage<TvListItem>;
   content_ratings?: { results: Array<{ iso_3166_1: string; rating: string }> };
-  images?: { logos: ImageAsset[] };
+  images?: { logos: ImageAsset[]; backdrops?: ImageAsset[] };
   external_ids?: { imdb_id: string | null };
 }
 
