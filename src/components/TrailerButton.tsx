@@ -5,13 +5,14 @@ import { trailerUrl } from "../utils/trailer";
 interface Props {
   trailerKey: string;
   title: string;
+  className?: string;
 }
 
 /**
  * Trailer diputar di dialog native: Escape menutup, fokus terkunci di dalam
  * dialog, dan iframe dilepas saat ditutup supaya audio benar-benar berhenti.
  */
-export default function TrailerButton({ trailerKey, title }: Props) {
+export default function TrailerButton({ trailerKey, title, className = "" }: Props) {
   const { copy } = useLanguage();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useState(false);
@@ -36,7 +37,7 @@ export default function TrailerButton({ trailerKey, title }: Props) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex min-h-11 items-center rounded-full border border-line bg-night/70 px-5 py-2.5 text-sm font-semibold text-paper transition hover:border-lineStrong hover:bg-panel"
+        className={`inline-flex min-h-11 shrink-0 items-center rounded-full border border-line bg-night/70 px-5 py-2.5 text-sm font-semibold text-paper transition hover:border-lineStrong hover:bg-panel ${className}`}
       >
         {copy.common.trailer}
         <span className="sr-only"> {copy.common.trailerDialogNote}</span>

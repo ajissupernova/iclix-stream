@@ -8,10 +8,11 @@ interface Props {
   title: string;
   /** "icon" untuk tombol bulat di kartu, "full" untuk tombol berteks. */
   variant?: "icon" | "full";
+  iconStyle?: "plus" | "bookmark";
   className?: string;
 }
 
-export default function WatchlistButton({ item, title, variant = "full", className = "" }: Props) {
+export default function WatchlistButton({ item, title, variant = "full", iconStyle = "plus", className = "" }: Props) {
   const { copy } = useLanguage();
   const { notify } = useToast();
   const { has, toggle } = useWatchlist();
@@ -39,7 +40,13 @@ export default function WatchlistButton({ item, title, variant = "full", classNa
         } ${className}`}
       >
         <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-          {saved ? <path d="M5 12.5l4.5 4.5L19 7.5" /> : <path d="M12 5v14M5 12h14" />}
+          {saved ? (
+            <path d="M5 12.5l4.5 4.5L19 7.5" />
+          ) : iconStyle === "bookmark" ? (
+            <path d="M6 4.5a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1V21l-6-3.5L6 21z" />
+          ) : (
+            <path d="M12 5v14M5 12h14" />
+          )}
         </svg>
       </button>
     );

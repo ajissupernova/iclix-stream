@@ -51,7 +51,7 @@ export default function HeroCarousel({ items }: { items: HeroTitle[] }) {
     <section
       aria-label={copy.hero.label}
       aria-roledescription="carousel"
-      className="relative isolate flex min-h-[560px] items-end overflow-hidden sm:min-h-[680px]"
+      className="relative isolate flex min-h-[500px] items-end overflow-hidden sm:min-h-[680px]"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocusCapture={() => setPaused(true)}
@@ -74,21 +74,21 @@ export default function HeroCarousel({ items }: { items: HeroTitle[] }) {
             />
           </div>
         ))}
-        <div className="absolute inset-0 bg-gradient-to-r from-night/85 via-night/35 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-night via-night/70 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-night/85 via-night/35 to-transparent max-sm:bg-gradient-to-b max-sm:from-night/0 max-sm:via-night/30 max-sm:to-night/85" />
+        <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-night via-night/70 to-transparent max-sm:h-48 max-sm:from-night/90 max-sm:via-night/45 max-sm:to-transparent" />
       </div>
 
-      <div className="hero-copy mx-auto w-full max-w-7xl px-4 pb-8 pt-24 sm:px-6 sm:pb-16 sm:pt-20">
-        <p className="hero-tagline max-w-xl text-sm italic text-paper/85 sm:text-base">
+      <div className="hero-copy mx-auto w-full max-w-7xl px-[18px] pb-5 pt-8 text-center sm:px-6 sm:pb-16 sm:pt-20 sm:text-left">
+        <p className="hero-tagline hidden max-w-xl text-sm italic text-paper/85 sm:block sm:text-base">
           {active.tagline || "\u00a0"}
         </p>
 
-        <h1 className="mt-4 flex h-[4.5rem] items-center sm:h-28 lg:h-32">
+        <h1 className="mt-1 flex min-h-[3.5rem] items-center justify-center sm:mt-4 sm:h-28 sm:min-h-0 sm:justify-start lg:h-32">
           {logo ? (
             <Link
               to={active.mediaType === "movie" ? `/film/${active.id}` : `/serial/${active.id}`}
               aria-label={`${title} - ${copy.hero.details}`}
-              className="inline-flex max-h-full max-w-full items-center rounded-sm"
+              className="inline-flex max-h-full max-w-full items-center justify-center rounded-sm sm:justify-start"
             >
               <img
                 src={logoUrl(logo.file_path) ?? undefined}
@@ -96,48 +96,66 @@ export default function HeroCarousel({ items }: { items: HeroTitle[] }) {
                 width={logo.width}
                 height={logo.height}
                 decoding="async"
-                className="h-auto max-h-[4.5rem] w-auto max-w-full object-contain object-left drop-shadow-[0_2px_14px_rgba(9,8,26,0.9)] sm:max-h-28 lg:max-h-32"
+                className="h-auto max-h-[3.5rem] w-auto max-w-full object-contain object-left drop-shadow-[0_2px_14px_rgba(9,8,26,0.9)] sm:max-h-28 lg:max-h-32"
               />
             </Link>
           ) : (
-            <span className="block max-w-3xl font-display text-4xl font-extrabold leading-[0.95] tracking-tight sm:text-6xl lg:text-7xl">
+            <span className="line-clamp-2 block max-w-3xl break-words font-display text-[clamp(2rem,9vw,2.5rem)] font-extrabold leading-[0.95] tracking-tight sm:line-clamp-none sm:text-6xl lg:text-7xl">
               {title}
             </span>
           )}
         </h1>
 
-        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm sm:mt-4 sm:gap-x-4">
+        <div className="mt-1 flex min-w-0 items-center justify-center gap-x-2 overflow-hidden whitespace-nowrap text-xs sm:mt-4 sm:justify-start sm:flex-wrap sm:gap-x-4 sm:gap-y-1.5 sm:overflow-visible sm:text-sm">
           {active.vote_average > 0 && (
-            <span className="inline-flex items-center gap-1.5 font-semibold text-gold">
+            <span className="inline-flex shrink-0 items-center gap-1.5 font-semibold text-gold">
               <svg viewBox="0 0 20 20" className="h-4 w-4" fill="currentColor" aria-hidden="true">
                 <path d="M10 1.8l2.5 5.3 5.8.7-4.3 4 1.1 5.7L10 14.6l-5.1 2.9L6 11.8 1.7 7.8l5.8-.7L10 1.8z" />
               </svg>
               {active.vote_average.toFixed(1)}
             </span>
           )}
-          <p className="max-w-full text-paper/90">{[year, runtime, genres].filter(Boolean).join(" • ")}</p>
-          <span className="text-paper/85">
+          <p className="min-w-0 truncate text-paper/90">{[year, runtime, genres].filter(Boolean).join(" • ")}</p>
+          <span className="hidden shrink-0 text-paper/85 sm:inline">
             {copy.hero.originalLanguage}: {formatLanguage(active.original_language)}
           </span>
         </div>
-
-        <p className="mt-3 h-[3rem] max-w-xl line-clamp-2 leading-relaxed text-paper/95 sm:mt-4 sm:h-[4.5rem] sm:line-clamp-3">
+        <p className="mt-2 hidden h-[2.6rem] max-w-xl line-clamp-2 text-sm leading-[1.3rem] text-paper sm:mt-4 sm:block sm:h-[4.5rem] sm:line-clamp-3 sm:text-base sm:leading-relaxed">
           {active.overview || "\u00a0"}
         </p>
-        <div className="mt-2 min-h-5 max-w-xl"><TextLocaleNote locale={active.textLocale} /></div>
+        <div className="mt-1 hidden min-h-5 max-w-xl sm:block"><TextLocaleNote locale={active.textLocale} /></div>
 
-        <div className="mt-5 flex flex-wrap items-center gap-2.5 sm:mt-7 sm:gap-3">
+        <div className="mt-3 flex min-w-0 items-center justify-center gap-2 sm:mt-7 sm:justify-start sm:gap-3">
           <Link
             to={active.mediaType === "movie" ? `/film/${active.id}` : `/serial/${active.id}`}
-            className="btn-primary"
+            className="btn-primary min-h-11 min-w-0 flex-1 justify-center px-3 py-2 text-xs sm:flex-none sm:px-6 sm:py-2.5 sm:text-sm"
           >
-            {copy.hero.details}
+            <span className="truncate">{copy.hero.details}</span>
           </Link>
-          {trailerKey && <TrailerButton trailerKey={trailerKey} title={title} />}
-          <WatchlistButton item={{ id: active.id, mediaType: active.mediaType }} title={title} />
+          {trailerKey && (
+            <TrailerButton
+              trailerKey={trailerKey}
+              title={title}
+              className="max-sm:min-h-11 max-sm:min-w-0 max-sm:flex-1 max-sm:justify-center max-sm:px-3 max-sm:py-2 max-sm:text-xs"
+            />
+          )}
+        </div>
+        <div className="mt-2 flex items-center justify-center sm:justify-start">
+          <WatchlistButton
+            item={{ id: active.id, mediaType: active.mediaType }}
+            title={title}
+            variant="icon"
+            iconStyle="bookmark"
+            className="sm:hidden"
+          />
+          <WatchlistButton
+            item={{ id: active.id, mediaType: active.mediaType }}
+            title={title}
+            className="hidden sm:inline-flex"
+          />
         </div>
 
-        <div className="mt-5 flex items-center gap-3 sm:mt-8 sm:gap-4">
+        <div className="relative mt-3 flex items-center justify-center gap-2 sm:mt-8 sm:justify-start sm:gap-4">
           <ul className="hidden items-center gap-2 sm:flex">
             {items.map((movie, i) => (
               <li key={`${movie.mediaType}-${movie.id}`}>
@@ -156,27 +174,21 @@ export default function HeroCarousel({ items }: { items: HeroTitle[] }) {
             ))}
           </ul>
           {items.length > 1 && (
-            <div className="flex items-center gap-2 sm:hidden">
-              <button
-                type="button"
-                onClick={() => setIndex((current) => (current - 1 + items.length) % items.length)}
-                aria-label={copy.hero.show(titleFor(items[(index - 1 + items.length) % items.length]))}
-                className="icon-btn"
-              >
-                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
-              </button>
-              <span className="min-w-12 text-center text-sm tabular-nums text-paper/90" aria-live="polite">
-                {index + 1} / {items.length}
-              </span>
-              <button
-                type="button"
-                onClick={() => setIndex((current) => (current + 1) % items.length)}
-                aria-label={copy.hero.show(titleFor(items[(index + 1) % items.length]))}
-                className="icon-btn"
-              >
-                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
-              </button>
-            </div>
+            <ul className="flex max-w-[calc(100%-3rem)] items-center justify-center gap-0.5 sm:hidden">
+              {items.map((movie, i) => (
+                <li key={`${movie.mediaType}-${movie.id}`}>
+                  <button
+                    type="button"
+                    onClick={() => setIndex(i)}
+                    aria-label={copy.hero.show(titleFor(movie))}
+                    aria-current={i === index}
+                    className="flex h-11 w-6 items-center justify-center"
+                  >
+                    <span className={`h-2 rounded-full transition-all duration-300 ${i === index ? "w-4 bg-clix" : "w-2 bg-paper/55"}`} />
+                  </button>
+                </li>
+              ))}
+            </ul>
           )}
           <button
             type="button"
@@ -184,7 +196,7 @@ export default function HeroCarousel({ items }: { items: HeroTitle[] }) {
             aria-pressed={!autoPlay}
             aria-label={autoPlay ? copy.hero.pauseSlideshow : copy.hero.playSlideshow}
             title={autoPlay ? copy.hero.pause : copy.hero.play}
-            className="icon-btn"
+            className="icon-btn h-11 w-11 max-sm:absolute max-sm:right-0 sm:h-11 sm:w-11"
           >
             {autoPlay ? (
               <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden="true">
