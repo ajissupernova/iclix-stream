@@ -18,7 +18,8 @@ export default function handler(req: IncomingMessage, res: ServerResponse): void
     requestUrl.searchParams.delete("__vercel_route_path");
     requestUrl.searchParams.delete("path");
     const query = requestUrl.searchParams.toString();
-    req.url = `/api${originalPath}${query ? `?${query}` : ""}`;
+    const routedPath = originalPath.startsWith("/media/") ? originalPath : `/api${originalPath}`;
+    req.url = `${routedPath}${query ? `?${query}` : ""}`;
   }
 
   createTranslateHandler(req, res, () =>

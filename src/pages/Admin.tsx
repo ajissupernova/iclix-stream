@@ -245,8 +245,8 @@ function ImageUploadField({
       setError("Pilih file JPG, PNG, atau WebP.");
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      setError("Ukuran gambar maksimal 5 MB.");
+    if (file.size > 3 * 1024 * 1024) {
+      setError("Ukuran gambar maksimal 3 MB.");
       return;
     }
     setUploading(true);
@@ -273,7 +273,7 @@ function ImageUploadField({
     <div>
       <label htmlFor={inputId} className="block text-sm font-semibold">{label}</label>
       <input id={inputId} type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" onChange={(event) => void upload(event)} disabled={uploading} className="mt-2 block min-h-11 w-full rounded-lg border border-lineStrong bg-night text-sm text-paper file:mr-3 file:min-h-11 file:border-0 file:bg-panel file:px-3 file:font-semibold file:text-paper hover:file:bg-haze disabled:cursor-not-allowed disabled:opacity-60" />
-      <p className="mt-1 text-xs text-mist">JPG, PNG, atau WebP. Maksimal 5 MB.</p>
+      <p className="mt-1 text-xs text-mist">JPG, PNG, atau WebP. Maksimal 3 MB.</p>
       {uploading && <p role="status" className="mt-2 text-sm text-mist">Mengunggah gambar...</p>}
       {error && <p role="alert" className="mt-2 text-sm text-red-200">{error}</p>}
       {value && (

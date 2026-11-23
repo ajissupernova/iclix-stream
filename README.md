@@ -34,10 +34,9 @@ memasukkan secret. Buat secret dengan:
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
-Draft, publikasi, koleksi, dan riwayat disimpan di `.data/site-content.json`.
-Logo dan gambar latar yang diunggah (JPG, PNG, WebP, maksimal 5 MB) disimpan di
-`.data/uploads`. Pada hosting, pastikan direktori `.data` berada di volume
-persisten. Sesi panel berakhir saat server dimulai ulang atau setelah 12 jam.
+Saat dijalankan lokal, draft, publikasi, koleksi, riwayat, dan gambar unggahan
+disimpan di `.data`. Di Vercel, data tersebut disimpan di private Vercel Blob.
+Unggahan JPG, PNG, atau WebP dibatasi maksimal 3 MB.
 
 ## Menjalankan
 
@@ -132,14 +131,15 @@ src/
 
 1. Push repository ini ke GitHub, lalu impor repository tersebut dari dashboard Vercel.
 2. Gunakan pengaturan build dari `vercel.json` (`npm run build`, output `dist`).
-3. Tambahkan `TMDB_API_KEY` atau `TMDB_READ_ACCESS_TOKEN` di Project Settings → Environment Variables. Tambahkan `ADMIN_SECRET` hanya jika panel admin akan digunakan.
-4. Deploy ulang setelah mengubah environment variables.
+3. Jika panel admin akan digunakan, buat **private Vercel Blob store** dari tab **Storage** proyek dan hubungkan ke project untuk Production. Pastikan koneksi menyediakan `BLOB_STORE_ID` dan autentikasi OIDC, atau tambahkan `BLOB_READ_WRITE_TOKEN`.
+4. Tambahkan `TMDB_API_KEY` atau `TMDB_READ_ACCESS_TOKEN`, serta `ADMIN_SECRET`, di Project Settings → Environment Variables.
+5. Deploy ulang setelah menghubungkan Blob atau mengubah environment variables.
 
 `api/[...path].ts` menjalankan endpoint TMDb, terjemahan, dan konten situs sebagai Vercel Function. `vercel.json` mengarahkan rute aplikasi React ke `index.html`. Untuk menjalankan lokal, gunakan `npm run dev`; `.env.example` menjadi contoh variabel lokal.
 
-### Batasan penyimpanan Vercel
+### Penyimpanan Vercel
 
-Vercel Functions tidak menyediakan disk persisten atau memori bersama antar-instance. Karena itu, data panel admin di `.data/site-content.json`, unggahan gambar, cache, sesi admin, dan rate limit berbasis memori tidak cocok untuk penyimpanan produksi di Vercel. Perubahan admin dan file yang diunggah dapat hilang atau tidak terlihat pada instance lain. Gunakan database dan object storage persisten sebelum mengandalkan fitur admin di produksi. Untuk deploy tanpa layanan tersebut, jangan gunakan panel admin untuk menyimpan konten penting.
+Vercel Functions tidak menyediakan disk persisten atau memori bersama antar-instance. Panel admin memakai private Vercel Blob untuk menyimpan konten situs dan gambar unggahan; hubungkan Blob store sebelum menggunakan fitur simpan di produksi. Cache dan batas percobaan login berbasis memori hanya bersifat sementara.
 
 Jangan commit `.env` atau memasukkan secret ke kode frontend. Isi environment variables melalui pengaturan lokal atau dashboard hosting.
 
