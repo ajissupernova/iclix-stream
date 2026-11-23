@@ -52,7 +52,6 @@ const SESSION_LIFETIME = 12 * 60 * 60 * 1000;
 const MAX_BODY = 7_000_000;
 const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 const ADMIN_SECRET = process.env.ADMIN_SECRET?.trim() || "";
-const memorySessions = new Map<string, number>();
 const failedUnlocks = new Map<string, { count: number; resetAt: number }>();
 
 interface Store {
@@ -127,8 +126,8 @@ function safeEqual(left: string, right: string): boolean {
   return timingSafeEqual(a, b);
 }
 
-function signature(token: string): string {
-  return createHmac("sha256", ADMIN_SECRET).update(token).digest("hex");
+function signature(value: string): string {
+  return createHmac("sha256", ADMIN_SECRET).update(value).digest("hex");
 }
 
 function cookieOptions(req: IncomingMessage): string {
@@ -141,14 +140,10 @@ function hasSession(req: IncomingMessage): boolean {
   const raw = req.headers.cookie ?? "";
   const value = raw.split(";").map((part) => part.trim()).find((part) => part.startsWith(`${SESSION_COOKIE}=`));
   if (!value) return false;
-  const [token, supplied] = decodeURIComponent(value.slice(SESSION_COOKIE.length + 1)).split(".");
-  if (!token || !supplied || !safeEqual(supplied, signature(token))) return false;
-  const expiresAt = memorySessions.get(token);
-  if (!expiresAt || expiresAt < Date.now()) {
-    memorySessions.delete(token);
-    return false;
-  }
-  return true;
+  const [token, rawExpiresAt, supplied] = decodeURIComponent(value.slice(SESSION_COOKIE.length + 1)).split(".");
+  const expiresAt = Number(rawExpiresAt);
+  if (!token || !Number.isSafeInteger(expiresAt) || expiresAt <= Date.now() || !supplied) return false;
+  return safeEqual(supplied, signature(`${token}.${expiresAt}`));
 }
 
 function send(res: ServerResponse, status: number, body: unknown): void {
@@ -357,8 +352,8 @@ export function createSiteContentHandler(req: IncomingMessage, res: ServerRespon
         }
         failedUnlocks.delete(address);
         const token = randomBytes(32).toString("hex");
-        memorySessions.set(token, Date.now() + SESSION_LIFETIME);
-        res.setHeader("set-cookie", `${SESSION_COOKIE}=${encodeURIComponent(`${token}.${signature(token)}`)}; ${cookieOptions(req)}`);
+        const signedValue = `${token}.${Date.now() + SESSION_LIFETIME}`;
+        res.setHeader("set-cookie", `${SESSION_COOKIE}=${encodeURIComponent(`${signedValue}.${signature(signedValue)}`)}; ${cookieOptions(req)}`);
         send(res, 200, { authenticated: true });
       })
       .catch(() => send(res, 400, { error: "Permintaan tidak valid." }));
@@ -366,10 +361,6 @@ export function createSiteContentHandler(req: IncomingMessage, res: ServerRespon
   }
 
   if (url.pathname === "/api/admin/lock" && req.method === "POST") {
-    const raw = req.headers.cookie ?? "";
-    const cookie = raw.split(";").map((part) => part.trim()).find((part) => part.startsWith(`${SESSION_COOKIE}=`));
-    const token = cookie ? decodeURIComponent(cookie.slice(SESSION_COOKIE.length + 1)).split(".")[0] : "";
-    if (token) memorySessions.delete(token);
     res.setHeader("set-cookie", `${SESSION_COOKIE}=; Path=/api/admin; HttpOnly; SameSite=Strict; Max-Age=0`);
     send(res, 200, { locked: true });
     return;
