@@ -7,7 +7,7 @@ import { get, put } from "@vercel/blob";
 
 interface SiteContent {
   spotlight: { mode: "popular" | "trending" | "random" | "manual"; titleIds: CuratedTitle[] };
-  homeSections: Array<{ id: string; kind: "catalog" | "collection" | "collection-group"; key?: string; collectionId?: string; groupId?: string; title?: string; visible: boolean }>;
+  homeSections: Array<{ id: string; kind: "catalog" | "collection" | "collection-group" | "genres"; key?: string; collectionId?: string; groupId?: string; title?: string; visible: boolean }>;
   collections: Array<{
     id: string; slug: string; title: string; description: string; logoUrl: string; backdropUrl: string;
     homeStyle: "banner" | "tile"; homeCrop: { x: number; y: number }; pageCrop: { x: number; y: number };
@@ -34,6 +34,7 @@ interface CuratedTitle {
 const DEFAULT_SITE_CONTENT: SiteContent = {
   spotlight: { mode: "trending", titleIds: [] },
   homeSections: [
+    { id: "genres", kind: "genres", visible: true },
     { id: "trending", kind: "catalog", key: "trending", visible: true },
     { id: "popular-movies", kind: "catalog", key: "popular-movies", visible: true },
     { id: "top-rated", kind: "catalog", key: "top-rated", visible: true },
@@ -82,8 +83,13 @@ function initialStore(): Store {
 }
 
 function normalizeContent(content: SiteContent): SiteContent {
+  const homeSections = Array.isArray(content.homeSections) ? [...content.homeSections] : [];
+  if (!homeSections.some((section) => section.kind === "genres")) {
+    homeSections.unshift({ id: "genres", kind: "genres", visible: true });
+  }
   return {
     ...content,
+    homeSections,
     collectionGroups: (content.collectionGroups ?? []).map((group) => ({
       ...group,
       collectionIds: Array.isArray(group.collectionIds) ? group.collectionIds : [],
@@ -306,7 +312,8 @@ function validContent(value: unknown): value is SiteContent {
       content.homeSections.every((section) =>
         Boolean(
           section && typeof section.id === "string" && section.id.length <= 100 &&
-          (section.kind === "catalog" ? section.key && sectionKeys.has(section.key)
+          (section.kind === "genres" ? true
+            : section.kind === "catalog" ? section.key && sectionKeys.has(section.key)
             : section.kind === "collection" ? typeof section.collectionId === "string"
               : section.kind === "collection-group" ? typeof section.groupId === "string"
                 : false) &&

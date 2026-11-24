@@ -7,7 +7,7 @@ import { useLanguage } from "../context/Language";
 import { useApi, type UseApiState } from "../hooks/useApi";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { useHeroDetails } from "../hooks/useHeroDetails";
-import { DEFAULT_SITE_CONTENT, type SiteContent } from "../api/siteConfig";
+import { curatedCollectionTitles, DEFAULT_SITE_CONTENT, type SiteContent } from "../api/siteConfig";
 import ErrorState from "../components/ErrorState";
 import CollectionRail from "../components/CollectionRail";
 import GenreStrip from "../components/GenreStrip";
@@ -147,10 +147,9 @@ export default function Home() {
         </div>
       )}
 
-      <GenreStrip />
-
       <div>
         {siteContentLoaded && visibleHomeSections.map((section) => {
+          if (section.kind === "genres") return <GenreStrip key={section.id} />;
           if (section.kind === "collection-group") {
             const group = collectionGroups.find((item) => item.id === section.groupId);
             if (!group) return null;
@@ -176,7 +175,7 @@ export default function Home() {
                   <span className="absolute inset-0 bg-gradient-to-r from-night via-night/70 to-transparent" aria-hidden="true" />
                   <span className="relative max-w-2xl">
                     {collection.logoUrl ? <img src={collection.logoUrl} alt={collection.title} width="500" height="160" loading="lazy" decoding="async" className="mb-4 max-h-16 max-w-[min(100%,20rem)] object-contain object-left" /> : <span className="block font-display text-2xl font-bold sm:text-4xl">{collection.title}</span>}
-                    <span className="block text-sm text-paper/90">{collection.description || `${collection.titleIds.length} judul pilihan`}</span>
+                    <span className="block text-sm text-paper/90">{collection.description || `${curatedCollectionTitles(collection).length} judul pilihan`}</span>
                     <span className="mt-3 inline-block text-sm font-semibold text-clix">Lihat koleksi</span>
                   </span>
                 </Link>

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { api } from "../api/endpoints";
 import type { SiteContent, CuratedTitle } from "../api/siteConfig";
-import { DEFAULT_SITE_CONTENT } from "../api/siteConfig";
+import { curatedCollectionTitles, DEFAULT_SITE_CONTENT } from "../api/siteConfig";
 import type { MediaItem } from "../api/transform";
 import MediaCard from "../components/MediaCard";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
@@ -36,11 +36,7 @@ export default function CollectionPage() {
         setState({ content: result.content, titles: new Map(), loading: false, error: "Koleksi tidak ditemukan." });
         return;
       }
-      const allTitles = [
-        ...collection.titleIds,
-        ...collection.sections.flatMap((section) => section.titleIds ?? []),
-      ];
-      const unique = [...new Map(allTitles.map((item) => [keyFor(item), item])).values()];
+      const unique = curatedCollectionTitles(collection);
       const results = await Promise.all(unique.map(async (item) => {
         if (item.type === "movie") {
           const response = await api.movieDetail(item.id);
@@ -87,6 +83,7 @@ export default function CollectionPage() {
     const media = state.titles.get(keyFor(item));
     return media ? [{ item, media }] : [];
   });
+  const curatedTitles = curatedCollectionTitles(collection);
 
   return (
     <main>
@@ -98,7 +95,7 @@ export default function CollectionPage() {
           <Link to="/" className="inline-flex min-h-11 items-center text-sm text-paper underline-offset-4 hover:underline">Beranda</Link>
           {collection.logoUrl ? <h1 className="mt-5"><img src={collection.logoUrl} alt={collection.title} width="500" height="160" className="max-h-24 max-w-full object-contain object-left" /></h1> : <h1 className="mt-5 max-w-4xl font-display text-4xl font-extrabold sm:text-6xl">{collection.title}</h1>}
           {collection.description && <p className="mt-4 max-w-2xl leading-relaxed text-paper/90">{collection.description}</p>}
-          <p className="mt-4 text-sm text-paper/90">{collection.titleIds.length} judul terkurasi</p>
+          <p className="mt-4 text-sm text-paper/90">{curatedTitles.length} judul terkurasi</p>
         </div>
       </header>
 

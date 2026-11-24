@@ -5,6 +5,7 @@ import { backdropUrl, posterUrl } from "../api/images";
 import type { ImageAsset, MultiSearchItem } from "../api/tmdbTypes";
 import {
   DEFAULT_SITE_CONTENT,
+  curatedCollectionTitles,
   type CollectionGroup,
   type CollectionSectionKind,
   type CuratedCollection,
@@ -556,7 +557,7 @@ function CollectionEditor({
               {collection.description || "Deskripsi koleksi akan tampil di sini."}
             </p>
             <p className="mt-3 text-xs text-paper/80">
-              {collection.sections.length} bagian · {collection.titleIds.length} judul pilihan
+               {collection.sections.length} bagian · {curatedCollectionTitles(collection).length} judul pilihan
             </p>
           </div>
         </div>
@@ -674,7 +675,7 @@ function CollectionGroupEditor({
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate font-medium">{collection.title || "Tanpa judul"}</span>
-                <span className="block text-xs text-mist">{collection.titleIds.length} judul · {collection.homeStyle === "tile" ? "Thumbnail" : "Banner"}</span>
+                <span className="block text-xs text-mist">{curatedCollectionTitles(collection).length} judul · {collection.homeStyle === "tile" ? "Thumbnail" : "Banner"}</span>
               </span>
               <span className="ml-auto flex shrink-0 gap-1">
                 <button type="button" aria-label={`Geser ${collection.title || "koleksi"} ke kiri`} onClick={() => reorder(index, -1)} disabled={index === 0} className="icon-btn rounded-lg disabled:cursor-not-allowed disabled:opacity-40">←</button>
@@ -942,7 +943,9 @@ export default function Admin() {
                     const group = section.kind === "collection-group" ? content.collectionGroups.find((item) => item.id === section.groupId) : undefined;
                     const title = section.kind === "collection-group"
                       ? section.title || group?.title || "Lingkup koleksi"
-                      : section.kind === "collection" ? section.title || collection?.title || "Koleksi" : section.title || CATALOG_SECTIONS.find((item) => item.key === section.key)?.title || "Section katalog";
+                      : section.kind === "collection" ? section.title || collection?.title || "Koleksi"
+                        : section.kind === "genres" ? "Jelajahi genre"
+                          : section.title || CATALOG_SECTIONS.find((item) => item.key === section.key)?.title || "Section katalog";
                     return <li
                       key={section.id}
                       onDragOver={(event) => {
@@ -977,7 +980,7 @@ export default function Admin() {
                         <svg viewBox="0 0 20 20" className="h-5 w-5" fill="currentColor" aria-hidden="true"><circle cx="6" cy="4" r="1.5" /><circle cx="14" cy="4" r="1.5" /><circle cx="6" cy="10" r="1.5" /><circle cx="14" cy="10" r="1.5" /><circle cx="6" cy="16" r="1.5" /><circle cx="14" cy="16" r="1.5" /></svg>
                         <span className="sr-only">Pegangan seret untuk {title}</span>
                       </span>
-                      <span><span className="block font-semibold">{title}</span><span className="text-xs text-mist">{section.kind === "collection" ? collection?.homeStyle === "tile" ? "Thumbnail koleksi, urutan kiri ke kanan" : "Banner koleksi" : section.kind === "collection-group" ? `Lingkup ${group?.collectionIds.length ?? 0} koleksi, baris geser` : "Data katalog TMDb"}</span></span>
+                      <span><span className="block font-semibold">{title}</span><span className="text-xs text-mist">{section.kind === "genres" ? "Pintasan genre film TMDb" : section.kind === "collection" ? collection?.homeStyle === "tile" ? "Thumbnail koleksi, urutan kiri ke kanan" : "Banner koleksi" : section.kind === "collection-group" ? `Lingkup ${group?.collectionIds.length ?? 0} koleksi, baris geser` : "Data katalog TMDb"}</span></span>
                       <label className="flex min-h-11 items-center gap-2 text-sm"><input type="checkbox" checked={section.visible && (section.kind !== "collection" || collection?.showOnHome !== false)} onChange={(event) => updateContent({
                         ...content,
                         homeSections: content.homeSections.map((item) => item.id === section.id ? { ...item, visible: event.target.checked } : item),

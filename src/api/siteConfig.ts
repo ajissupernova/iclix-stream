@@ -56,7 +56,7 @@ export interface CuratedCollection {
 
 export interface HomeSection {
   id: string;
-  kind: "catalog" | "collection" | "collection-group";
+  kind: "catalog" | "collection" | "collection-group" | "genres";
   key?: HomeSectionKey;
   collectionId?: string;
   groupId?: string;
@@ -73,6 +73,14 @@ export interface SiteContent {
   updatedAt: string | null;
 }
 
+export function curatedCollectionTitles(collection: CuratedCollection): CuratedTitle[] {
+  const titles = [
+    ...collection.titleIds,
+    ...collection.sections.flatMap((section) => section.titleIds ?? []),
+  ];
+  return [...new Map(titles.map((item) => [`${item.type}-${item.id}`, item])).values()];
+}
+
 export interface SiteContentEnvelope {
   published: SiteContent;
   draft: SiteContent;
@@ -83,6 +91,7 @@ export interface SiteContentEnvelope {
 export const DEFAULT_SITE_CONTENT: SiteContent = {
   spotlight: { mode: "trending", titleIds: [] },
   homeSections: [
+    { id: "genres", kind: "genres", visible: true },
     { id: "trending", kind: "catalog", key: "trending", visible: true },
     { id: "popular-movies", kind: "catalog", key: "popular-movies", visible: true },
     { id: "top-rated", kind: "catalog", key: "top-rated", visible: true },

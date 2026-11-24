@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { backdropUrl, heroBackdropUrl, logoUrl } from "../api/images";
+import { heroBackdropUrl, logoUrl } from "../api/images";
 import { useLanguage } from "../context/Language";
 import type { HeroTitle } from "../hooks/useHeroDetails";
 import { usePrefersReducedMotion } from "../hooks/usePrefersReducedMotion";
@@ -94,9 +94,8 @@ export default function HeroCarousel({ items }: { items: HeroTitle[] }) {
                 kind="backdrop"
                 fill
                 eager={i === 0}
-                src={backdropUrl(movieDesktopBackdrop)}
-                mobileSrc={backdropUrl(movieMobileBackdrop)}
-                highResSrc={heroBackdropUrl(movieDesktopBackdrop)}
+                src={heroBackdropUrl(movieDesktopBackdrop)}
+                mobileSrc={heroBackdropUrl(movieMobileBackdrop)}
                 alt={i === index ? copy.common.backdropAlt(title) : ""}
                 objectPosition={`${movie.desktopBackdropCrop?.x ?? 50}% ${movie.desktopBackdropCrop?.y ?? 50}%`}
                 mobileObjectPosition={`${movie.mobileBackdropCrop?.x ?? 50}% ${movie.mobileBackdropCrop?.y ?? 50}%`}
