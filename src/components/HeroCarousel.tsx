@@ -59,8 +59,9 @@ export default function HeroCarousel({ items }: { items: HeroTitle[] }) {
 
   const trailerKey = useMemo(() => pickTrailerKey(active.videos?.results), [active]);
   const logo = useMemo(() => pickTitleLogo(active.images?.logos), [active]);
-  const desktopBackdrop = pickBackdrop(active.images?.backdrops, 1.78) ?? active.backdrop_path;
-  const mobileBackdrop = pickBackdrop(active.images?.backdrops, 0.82, desktopBackdrop) ?? desktopBackdrop;
+  const curated = items[Math.min(index, items.length - 1)];
+  const desktopBackdrop = curated.desktopBackdropPath ?? pickBackdrop(active.images?.backdrops, 1.78) ?? active.backdrop_path;
+  const mobileBackdrop = curated.mobileBackdropPath ?? pickBackdrop(active.images?.backdrops, 0.82, desktopBackdrop) ?? desktopBackdrop;
   const year = formatYear(active.mediaType === "movie" ? active.release_date : active.first_air_date);
   const runtime = formatDuration(active.mediaType === "movie" ? active.runtime : active.episode_run_time[0] ?? null);
   const genres = active.genres.map((g) => g.name).join(", ");
@@ -79,7 +80,14 @@ export default function HeroCarousel({ items }: { items: HeroTitle[] }) {
         {items.map((movie, i) => {
           const isActive = movie.mediaType === active.mediaType && movie.id === active.id;
           const backdrop = isActive ? desktopBackdrop : movie.backdrop_path;
-          const mobile = isActive && mobileBackdrop !== desktopBackdrop ? heroBackdropUrl(mobileBackdrop) : null;
+          if (isActive) {
+            return (
+              <div key={`${movie.mediaType}-${movie.id}`} aria-hidden={i !== index} className={`absolute inset-0 transition-opacity duration-700 ${i === index ? "opacity-100" : "opacity-0"}`}>
+                <TmdbImage kind="backdrop" fill eager={i === 0} src={backdropUrl(desktopBackdrop)} highResSrc={heroBackdropUrl(desktopBackdrop)} alt={copy.common.backdropAlt(title)} objectPosition={`${curated.desktopBackdropCrop?.x ?? 50}% ${curated.desktopBackdropCrop?.y ?? 50}%`} className="hidden sm:block" />
+                <TmdbImage kind="backdrop" fill eager={i === 0} src={backdropUrl(mobileBackdrop)} highResSrc={heroBackdropUrl(mobileBackdrop)} alt={copy.common.backdropAlt(title)} objectPosition={`${curated.mobileBackdropCrop?.x ?? 50}% ${curated.mobileBackdropCrop?.y ?? 50}%`} className="sm:hidden" />
+              </div>
+            );
+          }
           return (
             <div
               key={`${movie.mediaType}-${movie.id}`}
@@ -91,7 +99,6 @@ export default function HeroCarousel({ items }: { items: HeroTitle[] }) {
                 fill
                 eager={i === 0}
                 src={backdropUrl(backdrop)}
-                mobileSrc={mobile}
                 highResSrc={heroBackdropUrl(backdrop)}
                 alt={i === index ? copy.common.backdropAlt(title) : ""}
               />

@@ -21,6 +21,7 @@ interface Props {
   srcSet?: string | null;
   /** Petunjuk lebar tampil agar browser memilih kandidat srcset yang tepat. */
   sizes?: string;
+  objectPosition?: string;
 }
 
 const KIND_STYLE: Record<ImageKind, { aspect: string; width: number; height: number }> = {
@@ -53,6 +54,7 @@ export default function TmdbImage({
   highResFrom = 1280,
   srcSet = null,
   sizes,
+  objectPosition = "50% 50%",
 }: Props) {
   const [failed, setFailed] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -72,6 +74,7 @@ export default function TmdbImage({
       loading={eager ? "eager" : "lazy"}
       fetchPriority={eager ? "high" : "auto"}
       decoding="async"
+      style={{ objectPosition }}
       onLoad={() => setLoaded(true)}
       onError={() => setFailed(true)}
       className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"}`}

@@ -25,6 +25,10 @@ interface CuratedTitle {
   watchOrder?: string;
   label?: string;
   posterPath?: string;
+  desktopBackdropPath?: string;
+  mobileBackdropPath?: string;
+  desktopBackdropCrop?: { x: number; y: number };
+  mobileBackdropCrop?: { x: number; y: number };
 }
 
 const DEFAULT_SITE_CONTENT: SiteContent = {
@@ -217,12 +221,17 @@ function validContent(value: unknown): value is SiteContent {
   const content = value as SiteContent;
   const validTitle = (item: unknown) => {
     if (!item || typeof item !== "object") return false;
-    const title = item as { id?: unknown; type?: unknown; watchOrder?: unknown; label?: unknown; posterPath?: unknown };
+    const title = item as { id?: unknown; type?: unknown; watchOrder?: unknown; label?: unknown; posterPath?: unknown; desktopBackdropPath?: unknown; mobileBackdropPath?: unknown; desktopBackdropCrop?: { x?: unknown; y?: unknown }; mobileBackdropCrop?: { x?: unknown; y?: unknown } };
+    const validCrop = (crop: { x?: unknown; y?: unknown } | undefined) =>
+      crop === undefined || (Number.isFinite(crop.x) && Number(crop.x) >= 0 && Number(crop.x) <= 100 && Number.isFinite(crop.y) && Number(crop.y) >= 0 && Number(crop.y) <= 100);
     return Number.isSafeInteger(title.id) && Number(title.id) > 0 &&
       (title.type === "movie" || title.type === "tv") &&
       (title.watchOrder === undefined || (typeof title.watchOrder === "string" && title.watchOrder.length <= 160)) &&
       (title.label === undefined || (typeof title.label === "string" && title.label.length <= 160)) &&
-      (title.posterPath === undefined || (typeof title.posterPath === "string" && title.posterPath.length <= 200 && title.posterPath.startsWith("/")));
+      (title.posterPath === undefined || (typeof title.posterPath === "string" && title.posterPath.length <= 200 && title.posterPath.startsWith("/"))) &&
+      (title.desktopBackdropPath === undefined || (typeof title.desktopBackdropPath === "string" && title.desktopBackdropPath.length <= 200 && title.desktopBackdropPath.startsWith("/"))) &&
+      (title.mobileBackdropPath === undefined || (typeof title.mobileBackdropPath === "string" && title.mobileBackdropPath.length <= 200 && title.mobileBackdropPath.startsWith("/"))) &&
+      validCrop(title.desktopBackdropCrop) && validCrop(title.mobileBackdropCrop);
   };
   const validTitleList = (items: unknown, max: number) =>
     Array.isArray(items) && items.length <= max && items.every(validTitle);

@@ -8,11 +8,19 @@ import { localizeTextFields, type TextLocaleInfo } from "../utils/localize";
 export interface HeroMovie extends MovieDetail {
   mediaType: "movie";
   textLocale?: TextLocaleInfo;
+  desktopBackdropPath?: string;
+  mobileBackdropPath?: string;
+  desktopBackdropCrop?: { x: number; y: number };
+  mobileBackdropCrop?: { x: number; y: number };
 }
 
 export interface HeroTv extends TvDetail {
   mediaType: "tv";
   textLocale?: TextLocaleInfo;
+  desktopBackdropPath?: string;
+  mobileBackdropPath?: string;
+  desktopBackdropCrop?: { x: number; y: number };
+  mobileBackdropCrop?: { x: number; y: number };
 }
 
 export type HeroTitle = HeroMovie | HeroTv;
@@ -40,7 +48,14 @@ export function useHeroDetails(titles: CuratedTitle[], lang: ApiLanguage): HeroD
     let active = true;
     setState((prev) => ({ ...prev, loading: true, error: null }));
 
-    const requested = titles.map((item) => ({ id: item.id, type: item.type }));
+    const requested = titles.map((item) => ({
+      id: item.id,
+      type: item.type,
+      desktopBackdropPath: item.desktopBackdropPath,
+      mobileBackdropPath: item.mobileBackdropPath,
+      desktopBackdropCrop: item.desktopBackdropCrop,
+      mobileBackdropCrop: item.mobileBackdropCrop,
+    }));
     const localizeTitle = async (item: HeroTitle): Promise<HeroTitle> => {
       if (lang === "en-US" || (item.overview.trim() && item.tagline.trim())) return item;
       if (item.mediaType === "movie") {
@@ -65,8 +80,8 @@ export function useHeroDetails(titles: CuratedTitle[], lang: ApiLanguage): HeroD
         : await api.tvHero(id, controller.signal);
       if (!response.ok) return null;
       return type === "movie"
-        ? { ...response.data, mediaType: "movie" as const }
-        : { ...response.data, mediaType: "tv" as const };
+        ? { ...response.data, ...requested.find((entry) => entry.id === id && entry.type === type), mediaType: "movie" as const }
+        : { ...response.data, ...requested.find((entry) => entry.id === id && entry.type === type), mediaType: "tv" as const };
     }))
       .then((results) => Promise.all(results.filter((item): item is HeroTitle => item !== null).map(localizeTitle)))
       .then((items) => {

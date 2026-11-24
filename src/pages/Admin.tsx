@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useId, useMemo, useState } from "react";
 import "./Admin.css";
 import { api } from "../api/endpoints";
-import { posterUrl } from "../api/images";
-import type { MultiSearchItem } from "../api/tmdbTypes";
+import { backdropUrl, posterUrl } from "../api/images";
+import type { ImageAsset, MultiSearchItem } from "../api/tmdbTypes";
 import {
   DEFAULT_SITE_CONTENT,
   type CollectionGroup,
@@ -200,7 +200,7 @@ function SpotlightTitleList({
               setDraggedIndex(null);
             }}
             onDragEnd={() => setDraggedIndex(null)}
-            className={`flex items-center gap-3 rounded-lg border border-line bg-night p-3 ${draggedIndex === index ? "opacity-50" : ""}`}
+            className={`grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-lg border border-line bg-night p-3 ${draggedIndex === index ? "opacity-50" : ""}`}
           >
             <CuratedTitlePoster title={item} />
             <span className="min-w-0 flex-1">
@@ -212,10 +212,90 @@ function SpotlightTitleList({
               <button type="button" aria-label={`Pindahkan ${name} ke bawah`} onClick={() => move(index, index + 1)} disabled={index === items.length - 1} className="icon-btn rounded-lg disabled:cursor-not-allowed disabled:opacity-40">↓</button>
               <button type="button" onClick={() => onChange(items.filter((_, itemIndex) => itemIndex !== index))} className="btn-quiet text-red-200">Hapus</button>
             </span>
+            <SpotlightBackdropPicker
+              title={item}
+              onChange={(patch) => onChange(items.map((entry, itemIndex) => itemIndex === index ? { ...entry, ...patch } : entry))}
+            />
           </li>
         );
       })}
     </ol>
+  );
+}
+
+function SpotlightBackdropPicker({
+  title,
+  onChange,
+}: {
+  title: CuratedTitle;
+  onChange: (patch: Partial<CuratedTitle>) => void;
+}) {
+  const [backdrops, setBackdrops] = useState<ImageAsset[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setLoading(true);
+    setError("");
+    const request = title.type === "movie"
+      ? api.movieHero(title.id, controller.signal)
+      : api.tvHero(title.id, controller.signal);
+    void request.then((result) => {
+      if (controller.signal.aborted) return;
+      if (!result.ok) {
+        setError("Backdrop TMDb gagal dimuat. Coba lagi.");
+        return;
+      }
+      setBackdrops(result.data.images?.backdrops ?? []);
+    }).catch(() => {
+      if (!controller.signal.aborted) setError("Backdrop TMDb gagal dimuat. Coba lagi.");
+    }).finally(() => {
+      if (!controller.signal.aborted) setLoading(false);
+    });
+    return () => controller.abort();
+  }, [title.id, title.type]);
+
+  const preview = (path: string | undefined, crop: { x: number; y: number } | undefined, ratio: string, label: string) => (
+    <div className="mt-3">
+      <p className="mb-2 text-xs font-semibold text-paper">{label}</p>
+      <div className="relative max-w-sm overflow-hidden rounded-md border border-line bg-dusk" style={{ aspectRatio: ratio }}>
+        {path ? <img src={backdropUrl(path) ?? undefined} alt={`Pratinjau backdrop ${label}`} width="1280" height="720" className="h-full w-full object-cover" style={{ objectPosition: `${crop?.x ?? 50}% ${crop?.y ?? 50}%` }} /> : <p className="grid h-full place-items-center text-xs text-mist">Backdrop bawaan TMDb</p>}
+      </div>
+      {path && <div className="mt-2 grid gap-2 sm:grid-cols-2">
+        {(["x", "y"] as const).map((axis) => (
+          <label key={axis} className="text-xs text-mist">{axis === "x" ? "Posisi horizontal" : "Posisi vertikal"}
+            <input type="range" min="0" max="100" value={crop?.[axis] ?? 50} onChange={(event) => onChange({ [label === "Desktop" ? "desktopBackdropCrop" : "mobileBackdropCrop"]: { x: label === "Desktop" ? title.desktopBackdropCrop?.x ?? 50 : title.mobileBackdropCrop?.x ?? 50, y: label === "Desktop" ? title.desktopBackdropCrop?.y ?? 50 : title.mobileBackdropCrop?.y ?? 50, [axis]: Number(event.target.value) } })} className="mt-1 block min-h-11 w-full accent-clix" />
+          </label>
+        ))}
+      </div>}
+    </div>
+  );
+
+  return (
+    <div className="col-span-full w-full border-t border-line pt-3">
+      <h4 className="text-sm font-semibold">Backdrop spotlight</h4>
+      <p className="mt-1 text-xs text-mist">Pilih gambar terpisah untuk desktop dan mobile. Geser posisi untuk mengatur crop.</p>
+      {loading ? <p role="status" className="mt-3 text-sm text-mist">Memuat backdrop TMDb…</p>
+        : error ? <p role="alert" className="mt-3 text-sm text-red-300">{error}</p>
+          : backdrops.length === 0 ? <p className="mt-3 text-sm text-mist">TMDb belum menyediakan backdrop untuk judul ini.</p>
+            : <div className="mt-3 grid gap-4 lg:grid-cols-2">
+              {(["desktopBackdropPath", "mobileBackdropPath"] as const).map((key) => {
+                const label = key.startsWith("desktop") ? "Desktop" : "Mobile";
+                const selected = title[key];
+                const crop = title[key === "desktopBackdropPath" ? "desktopBackdropCrop" : "mobileBackdropCrop"];
+                return <fieldset key={key} className="min-w-0">
+                  <legend className="text-sm font-semibold">{label}</legend>
+                  <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                    {backdrops.map((image) => <button key={image.file_path} type="button" aria-label={`Pilih backdrop ${label.toLowerCase()} ${image.file_path}`} aria-pressed={selected === image.file_path} onClick={() => onChange({ [key]: image.file_path, [key === "desktopBackdropPath" ? "desktopBackdropCrop" : "mobileBackdropCrop"]: { x: 50, y: 50 } })} className={`overflow-hidden rounded-md border-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clix ${selected === image.file_path ? "border-clix" : "border-line hover:border-lineStrong"}`}>
+                      <img src={backdropUrl(image.file_path, false) ?? undefined} alt="" width={image.width} height={image.height} loading="lazy" className="aspect-video w-full object-cover" />
+                    </button>)}
+                  </div>
+                  {preview(selected, crop, label === "Desktop" ? "16 / 9" : "4 / 5", label)}
+                </fieldset>;
+              })}
+            </div>}
+    </div>
   );
 }
 

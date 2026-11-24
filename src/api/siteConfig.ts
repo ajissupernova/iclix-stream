@@ -16,6 +16,10 @@ export interface CuratedTitle {
   label?: string;
   /** Path poster TMDb, disimpan agar admin dan halaman publik tetap menampilkan poster tanpa permintaan ulang. */
   posterPath?: string;
+  desktopBackdropPath?: string;
+  mobileBackdropPath?: string;
+  desktopBackdropCrop?: { x: number; y: number };
+  mobileBackdropCrop?: { x: number; y: number };
 }
 
 export type CollectionSectionKind = "watch-order" | "titles" | "text";
