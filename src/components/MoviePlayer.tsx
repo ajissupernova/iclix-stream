@@ -54,7 +54,6 @@ export default function MoviePlayer({
               title={copy.movie.playerFor(title)}
               width="100%"
               height="100%"
-              sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
               allow="fullscreen *; picture-in-picture *; encrypted-media *"
               allowFullScreen
               referrerPolicy="origin"
