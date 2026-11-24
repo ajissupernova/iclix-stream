@@ -58,7 +58,7 @@ export function useHeroDetails(titles: CuratedTitle[], lang: ApiLanguage): HeroD
       mobileBackdropCrop: item.mobileBackdropCrop,
     }));
     const localizeTitle = async (item: HeroTitle): Promise<HeroTitle> => {
-      if (lang === "en-US" || (item.overview.trim() && item.tagline.trim())) return item;
+      if (lang === "en-US") return item;
       if (item.mediaType === "movie") {
         const localized = await localizeTextFields<MovieDetail>(
           item,

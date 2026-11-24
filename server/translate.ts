@@ -5,7 +5,7 @@ import { cacheGet, cacheSet } from "./cache.js";
 const PATH = "/api/translate";
 const ENDPOINT = "https://translate.googleapis.com/translate_a/single";
 const TTL_MS = 30 * 24 * 60 * 60_000;
-const TIMEOUT_MS = 4000;
+const TIMEOUT_MS = 8000;
 const MAX_ITEMS = 20;
 const MAX_TEXT = 4000;
 const MAX_TOTAL = 60_000;
@@ -76,7 +76,11 @@ async function requestTranslation(text: string): Promise<string | null> {
 
   try {
     const res = await fetch(url, {
-      headers: { accept: "application/json", "user-agent": "iClix/1.0" },
+      headers: {
+        accept: "application/json",
+        "user-agent":
+          "Mozilla/5.0 (compatible; iClix/1.0; +https://iclix-vert.vercel.app)",
+      },
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
     if (!res.ok) return null;

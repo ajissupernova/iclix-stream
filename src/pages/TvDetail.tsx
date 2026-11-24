@@ -37,8 +37,6 @@ type ShowView = TvDetail & { textLocale?: TextLocaleInfo };
 
 type SeasonView = {
   detail: SeasonDetail;
-  englishOverviews: boolean;
-  englishNames: boolean;
 };
 
 export default function TvDetail() {
@@ -97,15 +95,14 @@ export default function TvDetail() {
           ok: true as const,
           data: {
             detail: primary.data,
-            englishOverviews: false,
-            englishNames: false,
           },
         };
       }
 
       const genericName = (name: string) => /^Episode \d+$/i.test(name.trim());
+      const englishOriginal = show.original_language.toLowerCase().startsWith("en");
       const needsEnglish = primary.data.episodes.some(
-        (episode) => !episode.overview.trim() || genericName(episode.name),
+        (episode) => englishOriginal || !episode.overview.trim() || genericName(episode.name),
       );
       const english = needsEnglish
         ? await api.seasonDetailEn(show.id, seasonNumber, signal)
@@ -120,7 +117,9 @@ export default function TvDetail() {
         const alt = byNumber.get(episode.episode_number);
         return {
           episode,
-          englishOverview: !episode.overview.trim() ? alt?.overview.trim() ?? "" : "",
+          englishOverview: englishOriginal
+            ? alt?.overview.trim() || episode.overview.trim()
+            : !episode.overview.trim() ? alt?.overview.trim() ?? "" : "",
           englishName: genericName(episode.name) ? alt?.name.trim() ?? "" : "",
         };
       });
@@ -130,32 +129,23 @@ export default function TvDetail() {
         .filter((text) => text.length > 0);
       const translation =
         missingOverviews.length > 0 ? await translateTexts(missingOverviews, signal) : null;
-      const translated = new Map<string, { text: string; done: boolean }>();
+      const translated = new Map<string, string>();
       if (translation?.ok) {
         missingOverviews.forEach((source, index) => {
-          translated.set(source, {
-            text: translation.data.texts[index] ?? source,
-            done: translation.data.translated[index] === true,
-          });
+          translated.set(source, translation.data.texts[index] ?? source);
         });
       }
 
-      let englishOverviews = false;
-      let englishNames = false;
-
       const episodes = gaps.map(({ episode, englishOverview, englishName }) => {
         let overview = episode.overview;
-        if (!overview.trim() && englishOverview) {
+        if ((englishOriginal || !overview.trim()) && englishOverview) {
           const result = translated.get(englishOverview);
           if (result) {
-            overview = result.text;
-            if (!result.done) englishOverviews = true;
+            overview = result;
           } else {
             overview = englishOverview;
-            englishOverviews = true;
           }
         }
-        if (englishName) englishNames = true;
         return {
           ...episode,
           name: englishName || episode.name,
@@ -167,8 +157,6 @@ export default function TvDetail() {
         ok: true as const,
         data: {
           detail: { ...primary.data, episodes },
-          englishOverviews,
-          englishNames,
         },
       };
     },
