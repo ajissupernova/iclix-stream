@@ -6,6 +6,7 @@ export type ApiLanguage = "id-ID" | "en-US";
 
 const LANGUAGE_KEY = "iclix:bahasa";
 const CLIENT_TTL = 60_000;
+const CLIENT_CACHE_LIMIT = 300;
 
 let language: ApiLanguage = readStoredLanguage();
 const memoryCache = new Map<string, { at: number; result: ApiResult<unknown> }>();
@@ -87,6 +88,10 @@ export async function tmdbFetch<T>(
     }
     const result: ApiResult<T> = { ok: true, data: body.data };
     memoryCache.set(url, { at: Date.now(), result });
+    if (memoryCache.size > CLIENT_CACHE_LIMIT) {
+      const oldestKey = memoryCache.keys().next().value;
+      if (oldestKey !== undefined) memoryCache.delete(oldestKey);
+    }
     return result;
   } catch (err) {
     if (signal?.aborted) {

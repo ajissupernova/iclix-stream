@@ -26,6 +26,7 @@ export interface HeroTv extends TvDetail {
 export type HeroTitle = HeroMovie | HeroTv;
 
 interface HeroDetailsState {
+  idKey: string;
   items: HeroTitle[];
   loading: boolean;
   error: string | null;
@@ -36,17 +37,17 @@ interface HeroDetailsState {
  * yang dipilih sebagai hero. Hasil per id yang gagal dilewati, bukan menggagalkan hero.
  */
 export function useHeroDetails(titles: CuratedTitle[], lang: ApiLanguage): HeroDetailsState {
-  const [state, setState] = useState<HeroDetailsState>({ items: [], loading: false, error: null });
-  const idKey = titles.map((item) => `${item.type}:${item.id}`).join(",");
+  const [state, setState] = useState<HeroDetailsState>({ idKey: "", items: [], loading: false, error: null });
+  const idKey = JSON.stringify(titles);
 
   useEffect(() => {
     if (idKey === "") {
-      setState({ items: [], loading: false, error: null });
+      setState({ idKey, items: [], loading: false, error: null });
       return;
     }
     const controller = new AbortController();
     let active = true;
-    setState((prev) => ({ ...prev, loading: true, error: null }));
+    setState({ idKey, items: [], loading: true, error: null });
 
     const requested = titles.map((item) => ({
       id: item.id,
@@ -87,6 +88,7 @@ export function useHeroDetails(titles: CuratedTitle[], lang: ApiLanguage): HeroD
       .then((items) => {
         if (!active) return;
         setState({
+          idKey,
           items,
           loading: false,
           error: items.length === 0 ? "Pilihan spotlight tidak bisa dimuat." : null,
@@ -99,5 +101,7 @@ export function useHeroDetails(titles: CuratedTitle[], lang: ApiLanguage): HeroD
     };
   }, [idKey, lang]);
 
-  return state;
+  return state.idKey === idKey
+    ? state
+    : { idKey, items: [], loading: idKey !== "", error: null };
 }

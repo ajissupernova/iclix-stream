@@ -5,6 +5,7 @@ interface CacheEntry {
 }
 
 const store = new Map<string, CacheEntry>();
+const MAX_ENTRIES = 500;
 
 export interface CacheHit {
   data: unknown;
@@ -20,6 +21,8 @@ export function cacheGet(key: string): CacheHit | null {
     store.delete(key);
     return null;
   }
+  store.delete(key);
+  store.set(key, entry);
   return { data: entry.data, stale: now > entry.freshUntil };
 }
 
@@ -31,4 +34,8 @@ export function cacheSet(key: string, data: unknown, ttlMs: number): void {
     // Data lama tetap disimpan sebagai jaring pengaman saat TMDb bermasalah.
     staleUntil: now + ttlMs + 7 * 24 * 60 * 60_000,
   });
+  if (store.size > MAX_ENTRIES) {
+    const oldestKey = store.keys().next().value;
+    if (oldestKey !== undefined) store.delete(oldestKey);
+  }
 }

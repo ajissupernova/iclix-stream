@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { CSSProperties } from "react";
 
 export type ImageKind = "poster" | "backdrop" | "profile" | "still";
 
@@ -15,6 +16,7 @@ interface Props {
   highResSrc?: string | null;
   /** Artwork alternatif yang dipilih khusus untuk layar kecil. */
   mobileSrc?: string | null;
+  mobileObjectPosition?: string;
   /** Lebar viewport minimum (px) untuk memakai highResSrc. */
   highResFrom?: number;
   /** Daftar kandidat gambar untuk srcset, misalnya poster w185/w342/w500. */
@@ -51,6 +53,7 @@ export default function TmdbImage({
   fill = false,
   highResSrc = null,
   mobileSrc = null,
+  mobileObjectPosition,
   highResFrom = 1280,
   srcSet = null,
   sizes,
@@ -74,10 +77,15 @@ export default function TmdbImage({
       loading={eager ? "eager" : "lazy"}
       fetchPriority={eager ? "high" : "auto"}
       decoding="async"
-      style={{ objectPosition }}
+      style={{
+        ...(mobileObjectPosition ? {
+          "--desktop-object-position": objectPosition,
+          "--mobile-object-position": mobileObjectPosition,
+        } as CSSProperties : { objectPosition }),
+      }}
       onLoad={() => setLoaded(true)}
       onError={() => setFailed(true)}
-      className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"}`}
+      className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${mobileObjectPosition ? "tmdb-image-mobile-position" : ""} ${loaded ? "opacity-100" : "opacity-0"}`}
     />
   );
 

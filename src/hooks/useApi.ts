@@ -16,6 +16,7 @@ export interface UseApiState<T> {
 export function useApi<T>(
   fetcher: (signal: AbortSignal) => Promise<ApiResult<T>>,
   deps: unknown[],
+  enabled = true,
 ): UseApiState<T> {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
@@ -26,6 +27,13 @@ export function useApi<T>(
   fetcherRef.current = fetcher;
 
   useEffect(() => {
+    if (!enabled) {
+      setData(null);
+      setLoading(false);
+      setError(null);
+      setCode(null);
+      return;
+    }
     const controller = new AbortController();
     let active = true;
     setData(null);
@@ -49,7 +57,7 @@ export function useApi<T>(
       active = false;
       controller.abort();
     };
-  }, [...deps, attempt]);
+  }, [...deps, attempt, enabled]);
 
   const reload = useCallback(() => setAttempt((n) => n + 1), []);
 

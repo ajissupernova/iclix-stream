@@ -9,6 +9,7 @@ const TIMEOUT_MS = 8000;
 const TTL_LIST = 5 * 60_000;
 const TTL_DETAIL = 6 * 60 * 60_000;
 const TTL_STATIC = 24 * 60 * 60_000;
+const upstreamRequests = new Map<string, Promise<UpstreamResult>>();
 
 const ALLOWED_PATHS: RegExp[] = [
   /^\/configuration$/,
@@ -196,6 +197,31 @@ async function callTmdb(path: string, params: Record<string, string>): Promise<U
   return last;
 }
 
+function refreshCache(cacheKey: string, path: string, params: Record<string, string>, ttl: number): Promise<UpstreamResult> {
+  const existing = upstreamRequests.get(cacheKey);
+  if (existing) return existing;
+
+  const request = callTmdb(path, params)
+    .then((result) => {
+      const isDetail = /^\/(movie|tv)\/\d{1,10}$/.test(path);
+      const detail = result.data && typeof result.data === "object"
+        ? result.data as Record<string, unknown>
+        : null;
+      if (
+        result.status === 200 &&
+        (!isDetail || (detail !== null && !isUnreleasedDetail(detail) && !isIndonesianTitle(detail)))
+      ) {
+        cacheSet(cacheKey, withoutUnreleasedTitles(withoutIndonesianMovies(result.data)), ttl);
+      }
+      return result;
+    })
+    .finally(() => {
+      upstreamRequests.delete(cacheKey);
+    });
+  upstreamRequests.set(cacheKey, request);
+  return request;
+}
+
 async function handleApi(pathname: string, search: string): Promise<{ status: number; body: unknown; cacheSeconds: number }> {
   const path = pathname.slice(API_PREFIX.length) || "/";
 
@@ -258,7 +284,23 @@ async function handleApi(pathname: string, search: string): Promise<{ status: nu
     };
   }
 
-  const result = await callTmdb(path, params);
+  if (hit?.stale) {
+    void refreshCache(cacheKey, path, params, ttl);
+    if (/^\/(movie|tv)\/\d{1,10}$/.test(path) && isUnreleasedDetail(hit.data)) {
+      return { status: 404, body: errorBody(404, "NOT_FOUND", "Judul belum tayang."), cacheSeconds: 0 };
+    }
+    if (/^\/(movie|tv)\/\d{1,10}$/.test(path) && hit.data && typeof hit.data === "object" &&
+      isIndonesianTitle(hit.data as Record<string, unknown>)) {
+      return { status: 404, body: errorBody(404, "NOT_FOUND", "Film tidak ditemukan."), cacheSeconds: 0 };
+    }
+    return {
+      status: 200,
+      body: { ok: true, data: withoutUnreleasedTitles(withoutIndonesianMovies(hit.data)) },
+      cacheSeconds: 60,
+    };
+  }
+
+  const result = await refreshCache(cacheKey, path, params, ttl);
   if (result.status === 200) {
     if (/^\/(movie|tv)\/\d{1,10}$/.test(path) && isUnreleasedDetail(result.data)) {
       return { status: 404, body: errorBody(404, "NOT_FOUND", "Judul belum tayang."), cacheSeconds: 0 };
@@ -272,29 +314,9 @@ async function handleApi(pathname: string, search: string): Promise<{ status: nu
       };
     }
     const data = withoutUnreleasedTitles(withoutIndonesianMovies(result.data));
-    cacheSet(cacheKey, data, ttl);
     return { status: 200, body: { ok: true, data }, cacheSeconds: Math.ceil(ttl / 1000) };
   }
 
-  // Sajikan data kedaluwarsa bila ada, agar halaman tetap hidup saat upstream error/429.
-  if (hit) {
-    if (/^\/(movie|tv)\/\d{1,10}$/.test(path) && isUnreleasedDetail(hit.data)) {
-      return { status: 404, body: errorBody(404, "NOT_FOUND", "Judul belum tayang."), cacheSeconds: 0 };
-    }
-    if (/^\/(movie|tv)\/\d{1,10}$/.test(path) && hit.data && typeof hit.data === "object" &&
-      isIndonesianTitle(hit.data as Record<string, unknown>)) {
-      return {
-        status: 404,
-        body: errorBody(404, "NOT_FOUND", "Film tidak ditemukan."),
-        cacheSeconds: 0,
-      };
-    }
-    return {
-      status: 200,
-      body: { ok: true, data: withoutUnreleasedTitles(withoutIndonesianMovies(hit.data)) },
-      cacheSeconds: 60,
-    };
-  }
   return {
     status: result.status === 401 ? 502 : result.status,
     body: errorBody(result.status, result.code || "UPSTREAM", result.message || "Gagal mengambil data."),

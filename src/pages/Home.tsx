@@ -25,40 +25,63 @@ export default function Home() {
   const [siteContentLoaded, setSiteContentLoaded] = useState(false);
   useEffect(() => {
     let active = true;
+    let requestId = 0;
+    let controller: AbortController | null = null;
+    let refreshTimer: number | null = null;
     const refresh = () => {
-      fetch("/api/site-content")
+      const currentRequest = ++requestId;
+      controller?.abort();
+      controller = new AbortController();
+      fetch("/api/site-content", { signal: controller.signal })
         .then((response) => (response.ok ? response.json() : null))
         .then((result) => {
-          if (!active) return;
+          if (!active || currentRequest !== requestId) return;
           if (result?.content) setSiteContent(result.content as SiteContent);
           setSiteContentLoaded(true);
         })
-        .catch(() => {
-          if (active) setSiteContentLoaded(true);
+        .catch((error: unknown) => {
+          if (active && currentRequest === requestId && !(error instanceof DOMException && error.name === "AbortError")) {
+            setSiteContentLoaded(true);
+          }
         });
     };
     const refreshWhenVisible = () => {
-      if (document.visibilityState === "visible") refresh();
+      if (document.visibilityState === "visible") scheduleRefresh();
+    };
+    const scheduleRefresh = () => {
+      if (refreshTimer !== null) window.clearTimeout(refreshTimer);
+      refreshTimer = window.setTimeout(refresh, 250);
     };
     refresh();
-    window.addEventListener("focus", refresh);
+    window.addEventListener("focus", scheduleRefresh);
     document.addEventListener("visibilitychange", refreshWhenVisible);
     return () => {
       active = false;
-      window.removeEventListener("focus", refresh);
+      if (refreshTimer !== null) window.clearTimeout(refreshTimer);
+      controller?.abort();
+      window.removeEventListener("focus", scheduleRefresh);
       document.removeEventListener("visibilitychange", refreshWhenVisible);
     };
   }, []);
   useDocumentTitle("");
 
-  const trending = useApi((s) => api.trendingMovies(s), [lang]);
-  const popular = useApi((s) => api.popularMovies(s), [lang]);
-  const topRated = useApi((s) => api.topRatedMovies(s), [lang]);
-  const nowPlaying = useApi((s) => api.nowPlayingMovies(s), [lang]);
-  const upcoming = useApi((s) => api.upcomingMovies(s), [lang]);
-  const tvPopular = useApi((s) => api.popularTv(s), [lang]);
-  const tvTrending = useApi((s) => api.trendingTv(s), [lang]);
-  const tvTopRated = useApi((s) => api.topRatedTv(s), [lang]);
+  const visibleHomeSections = siteContent.homeSections.filter((section) => section.visible);
+  const requiredCatalogs = new Set<string>(
+    visibleHomeSections.flatMap((section) =>
+      section.kind === "catalog" && section.key ? [section.key] : [],
+    ),
+  );
+  if (siteContent.spotlight.mode === "popular") requiredCatalogs.add("popular-movies");
+  if (siteContent.spotlight.mode === "trending" || siteContent.spotlight.mode === "random") requiredCatalogs.add("trending");
+  const catalogEnabled = (key: string) => siteContentLoaded && requiredCatalogs.has(key);
+  const trending = useApi((s) => api.trendingMovies(s), [lang], catalogEnabled("trending"));
+  const popular = useApi((s) => api.popularMovies(s), [lang], catalogEnabled("popular-movies"));
+  const topRated = useApi((s) => api.topRatedMovies(s), [lang], catalogEnabled("top-rated"));
+  const nowPlaying = useApi((s) => api.nowPlayingMovies(s), [lang], catalogEnabled("now-playing"));
+  const upcoming = useApi((s) => api.upcomingMovies(s), [lang], catalogEnabled("upcoming"));
+  const tvPopular = useApi((s) => api.popularTv(s), [lang], catalogEnabled("popular-tv"));
+  const tvTrending = useApi((s) => api.trendingTv(s), [lang], catalogEnabled("trending-tv"));
+  const tvTopRated = useApi((s) => api.topRatedTv(s), [lang], catalogEnabled("top-rated-tv"));
 
   const heroTitles = useMemo(() => {
     const source = siteContent.spotlight.mode === "manual"
@@ -74,15 +97,23 @@ export default function Home() {
   const hero = useHeroDetails(heroTitles, lang);
 
   const showHero = hero.items.length > 0;
-  const spotlightLoading = siteContent.spotlight.mode === "popular" ? popular.loading : trending.loading;
-  const spotlightState = siteContent.spotlight.mode === "popular" ? popular : trending;
+  const spotlightMode = siteContent.spotlight.mode;
+  const spotlightLoading = spotlightMode === "popular"
+    ? popular.loading
+    : spotlightMode === "manual" ? false : trending.loading;
+  const spotlightError = spotlightMode === "manual"
+    ? null
+    : spotlightMode === "popular" ? popular.error : trending.error;
+  const spotlightErrorCode = spotlightMode === "manual"
+    ? null
+    : spotlightMode === "popular" ? popular.code : trending.code;
+  const spotlightReload = spotlightMode === "popular" ? popular.reload : trending.reload;
   const heroLoading = spotlightLoading || (heroTitles.length > 0 && hero.loading);
-  const heroError = spotlightState.error ?? (hero.error ? copy.home.heroError : null);
-  const heroErrorCode = spotlightState.error ? spotlightState.code : null;
+  const heroError = spotlightError ?? (hero.error ? copy.home.heroError : null);
+  const heroErrorCode = spotlightError ? spotlightErrorCode : null;
   // Tanpa API key, satu banner sudah cukup; kartu error per baris hanya mengulang pesan.
-  const configMissing = spotlightState.code === "NO_KEY";
+  const configMissing = spotlightErrorCode === "NO_KEY";
   const rowError = (message: string | null) => (configMissing ? null : message);
-  const visibleHomeSections = siteContent.homeSections.filter((section) => section.visible);
   const collectionGroups = siteContent.collectionGroups ?? [];
   const groupedCollectionIds = new Set(collectionGroups.flatMap((group) => group.collectionIds));
   const tileCollections = visibleHomeSections.flatMap((section) => {
@@ -103,7 +134,7 @@ export default function Home() {
       {(!siteContentLoaded || (!showHero && heroLoading)) && <HeroSkeleton />}
       {siteContentLoaded && !showHero && !configMissing && !heroLoading && heroError && (
         <div className="mx-auto max-w-3xl px-4 pt-10">
-          <ErrorState message={heroError} code={heroErrorCode} onRetry={trending.reload} />
+            <ErrorState message={heroError} code={heroErrorCode} onRetry={spotlightReload} />
         </div>
       )}
       {siteContentLoaded && !showHero && configMissing && (
@@ -111,7 +142,7 @@ export default function Home() {
           <ErrorState
             message={heroError ?? copy.home.noKey}
             code="NO_KEY"
-            onRetry={spotlightState.reload}
+            onRetry={spotlightReload}
           />
         </div>
       )}
@@ -141,10 +172,10 @@ export default function Home() {
             return (
               <section key={section.id} className="mx-auto max-w-7xl px-4 py-5 sm:px-6">
                 <Link to={`/koleksi/${collection.slug}`} className="group relative flex min-h-44 items-end overflow-hidden rounded-panel border border-line bg-dusk p-6 transition hover:border-lineStrong sm:min-h-60 sm:p-9">
-                  {collection.backdropUrl && <img src={collection.backdropUrl} alt="" width="1600" height="600" className="absolute inset-0 h-full w-full object-cover opacity-55 transition duration-300 group-hover:scale-[1.02]" style={{ objectPosition: `${collection.homeCrop.x}% ${collection.homeCrop.y}%` }} />}
+                  {collection.backdropUrl && <img src={collection.backdropUrl} alt="" width="1600" height="600" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover opacity-55 transition duration-300 group-hover:scale-[1.02]" style={{ objectPosition: `${collection.homeCrop.x}% ${collection.homeCrop.y}%` }} />}
                   <span className="absolute inset-0 bg-gradient-to-r from-night via-night/70 to-transparent" aria-hidden="true" />
                   <span className="relative max-w-2xl">
-                    {collection.logoUrl ? <img src={collection.logoUrl} alt={collection.title} width="500" height="160" className="mb-4 max-h-16 max-w-[min(100%,20rem)] object-contain object-left" /> : <span className="block font-display text-2xl font-bold sm:text-4xl">{collection.title}</span>}
+                    {collection.logoUrl ? <img src={collection.logoUrl} alt={collection.title} width="500" height="160" loading="lazy" decoding="async" className="mb-4 max-h-16 max-w-[min(100%,20rem)] object-contain object-left" /> : <span className="block font-display text-2xl font-bold sm:text-4xl">{collection.title}</span>}
                     <span className="block text-sm text-paper/90">{collection.description || `${collection.titleIds.length} judul pilihan`}</span>
                     <span className="mt-3 inline-block text-sm font-semibold text-clix">Lihat koleksi</span>
                   </span>

@@ -51,10 +51,10 @@ export default function CollectionRail({ collections, title = "Koleksi pilihan" 
         {collections.map((collection) => (
           <li key={collection.id} className="w-44 shrink-0 snap-start sm:w-56 lg:w-60">
             <Link to={`/koleksi/${collection.slug}`} aria-label={`Lihat koleksi ${collection.title}`} className="group relative flex aspect-[2.4/1] items-center justify-center overflow-hidden rounded-card border border-line bg-dusk p-3 transition hover:border-lineStrong sm:p-4">
-              {collection.backdropUrl && <img src={collection.backdropUrl} alt="" width="720" height="300" className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]" style={{ objectPosition: `${collection.homeCrop.x}% ${collection.homeCrop.y}%` }} />}
+              {collection.backdropUrl && <img src={collection.backdropUrl} alt="" width="720" height="300" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]" style={{ objectPosition: `${collection.homeCrop.x}% ${collection.homeCrop.y}%` }} />}
               <span className="absolute inset-0 bg-night/55 transition group-hover:bg-night/40" aria-hidden="true" />
               {collection.logoUrl
-                ? <img src={collection.logoUrl} alt="" width="500" height="160" className="relative max-h-full max-w-full object-contain" />
+                 ? <img src={collection.logoUrl} alt="" width="500" height="160" loading="lazy" decoding="async" className="relative max-h-full max-w-full object-contain" />
                 : <span className="relative text-center font-display text-lg font-bold sm:text-xl">{collection.title}</span>}
             </Link>
           </li>

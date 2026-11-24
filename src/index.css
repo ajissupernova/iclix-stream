@@ -115,6 +115,17 @@
     text-shadow: none;
   }
 
+  .tmdb-image-mobile-position {
+    --desktop-object-position: 50% 50%;
+    object-position: var(--desktop-object-position);
+  }
+
+  @media (max-width: 639px) {
+    .tmdb-image-mobile-position {
+      object-position: var(--mobile-object-position, 50% 50%);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .media-poster img {
       transition: none;

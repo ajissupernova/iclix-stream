@@ -43,13 +43,14 @@ export default function HeroCarousel({ items }: { items: HeroTitle[] }) {
   const [autoPlay, setAutoPlay] = useState(true);
   const [paused, setPaused] = useState(false);
   const reducedMotion = usePrefersReducedMotion();
+  const itemsKey = items.map((item) => `${item.mediaType}:${item.id}`).join(",");
 
   const active = items[Math.min(index, items.length - 1)];
   const title = titleFor(active);
 
   useEffect(() => {
-    setIndex((current) => Math.min(current, items.length - 1));
-  }, [items.length]);
+    setIndex(0);
+  }, [itemsKey]);
 
   useEffect(() => {
     if (!autoPlay || paused || reducedMotion || items.length < 2) return;
@@ -79,28 +80,26 @@ export default function HeroCarousel({ items }: { items: HeroTitle[] }) {
       <div className="absolute inset-0 -z-10">
         {items.map((movie, i) => {
           const isActive = movie.mediaType === active.mediaType && movie.id === active.id;
-          const backdrop = isActive ? desktopBackdrop : movie.backdrop_path;
-          if (isActive) {
-            return (
-              <div key={`${movie.mediaType}-${movie.id}`} aria-hidden={i !== index} className={`absolute inset-0 transition-opacity duration-700 ${i === index ? "opacity-100" : "opacity-0"}`}>
-                <TmdbImage kind="backdrop" fill eager={i === 0} src={backdropUrl(desktopBackdrop)} highResSrc={heroBackdropUrl(desktopBackdrop)} alt={copy.common.backdropAlt(title)} objectPosition={`${curated.desktopBackdropCrop?.x ?? 50}% ${curated.desktopBackdropCrop?.y ?? 50}%`} className="hidden sm:block" />
-                <TmdbImage kind="backdrop" fill eager={i === 0} src={backdropUrl(mobileBackdrop)} highResSrc={heroBackdropUrl(mobileBackdrop)} alt={copy.common.backdropAlt(title)} objectPosition={`${curated.mobileBackdropCrop?.x ?? 50}% ${curated.mobileBackdropCrop?.y ?? 50}%`} className="sm:hidden" />
-              </div>
-            );
-          }
+          const movieDesktopBackdrop = movie.desktopBackdropPath
+            ?? (isActive ? desktopBackdrop : pickBackdrop(movie.images?.backdrops, 1.78) ?? movie.backdrop_path);
+          const movieMobileBackdrop = movie.mobileBackdropPath
+            ?? (isActive ? mobileBackdrop : pickBackdrop(movie.images?.backdrops, 0.82, movieDesktopBackdrop) ?? movieDesktopBackdrop);
           return (
             <div
               key={`${movie.mediaType}-${movie.id}`}
               aria-hidden={i !== index}
-              className={`absolute inset-0 transition-opacity duration-700 ${i === index ? "opacity-100" : "opacity-0"}`}
+              className={`absolute inset-0 transition-opacity duration-200 ${i === index ? "opacity-100" : "opacity-0"}`}
             >
               <TmdbImage
                 kind="backdrop"
                 fill
                 eager={i === 0}
-                src={backdropUrl(backdrop)}
-                highResSrc={heroBackdropUrl(backdrop)}
+                src={backdropUrl(movieDesktopBackdrop)}
+                mobileSrc={backdropUrl(movieMobileBackdrop)}
+                highResSrc={heroBackdropUrl(movieDesktopBackdrop)}
                 alt={i === index ? copy.common.backdropAlt(title) : ""}
+                objectPosition={`${movie.desktopBackdropCrop?.x ?? 50}% ${movie.desktopBackdropCrop?.y ?? 50}%`}
+                mobileObjectPosition={`${movie.mobileBackdropCrop?.x ?? 50}% ${movie.mobileBackdropCrop?.y ?? 50}%`}
               />
             </div>
           );
