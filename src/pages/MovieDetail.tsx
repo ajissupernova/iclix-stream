@@ -12,7 +12,6 @@ import Breadcrumbs from "../components/Breadcrumbs";
 import MediaRow from "../components/MediaRow";
 import MoviePlayer from "../components/MoviePlayer";
 import SectionNav from "../components/SectionNav";
-import TextLocaleNote from "../components/TextLocaleNote";
 import TitleLogo from "../components/TitleLogo";
 import TrailerButton from "../components/TrailerButton";
 import TmdbImage from "../components/TmdbImage";
@@ -258,8 +257,6 @@ export default function MovieDetail() {
             <p className="mt-6 max-w-2xl leading-relaxed text-paper/90">
               {movie.overview || copy.common.overviewEmpty}
             </p>
-            <TextLocaleNote locale={movie.textLocale} className="mt-2 max-w-2xl" />
-
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <WatchlistButton item={{ id: movie.id, mediaType: "movie" }} title={title} />
               {trailerKey && <TrailerButton trailerKey={trailerKey} title={title} />}

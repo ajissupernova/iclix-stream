@@ -8,7 +8,6 @@ import { pickTitleLogo } from "../utils/artwork";
 import { formatDuration, formatLanguage, formatYear } from "../utils/format";
 import { preferredTitle } from "../utils/title";
 import { pickTrailerKey } from "../utils/trailer";
-import TextLocaleNote from "./TextLocaleNote";
 import TmdbImage from "./TmdbImage";
 import TrailerButton from "./TrailerButton";
 import WatchlistButton from "./WatchlistButton";
@@ -152,7 +151,6 @@ export default function HeroCarousel({ items }: { items: HeroTitle[] }) {
         <p className="mt-2 hidden h-[2.6rem] max-w-xl line-clamp-2 text-sm leading-[1.3rem] text-paper sm:mt-4 sm:block sm:h-[4.5rem] sm:line-clamp-3 sm:text-base sm:leading-relaxed">
           {active.overview || "\u00a0"}
         </p>
-        <div className="mt-1 hidden min-h-5 max-w-xl sm:block"><TextLocaleNote locale={active.textLocale} /></div>
 
         <div className="mt-3 flex min-w-0 items-center justify-center gap-2 sm:mt-7 sm:justify-start sm:gap-3">
           <Link

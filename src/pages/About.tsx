@@ -46,12 +46,6 @@ export default function About() {
         <p className="mt-3 leading-relaxed text-paper/90">{copy.about.privacyBody}</p>
       </section>
 
-      <section aria-label={copy.about.translationHeading} className="mt-8">
-        <h2 className="text-balance font-display text-xl font-bold sm:text-2xl">
-          {copy.about.translationHeading}
-        </h2>
-        <p className="mt-3 leading-relaxed text-paper/90">{copy.about.translationBody}</p>
-      </section>
     </div>
   );
 }

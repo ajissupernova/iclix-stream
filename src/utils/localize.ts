@@ -10,6 +10,7 @@ export interface TextLocaleInfo {
 interface TextFields {
   overview: string;
   tagline: string;
+  original_language?: string;
 }
 
 export interface LocalizedTextFields<T extends TextFields> {
@@ -40,27 +41,26 @@ export async function localizeTextFields<T extends TextFields>(
 ): Promise<LocalizedTextFields<T>> {
   const overview = primary.overview.trim();
   const tagline = primary.tagline.trim();
-  if (overview && tagline) {
+  const englishOriginal = primary.original_language?.toLowerCase().startsWith("en") ?? false;
+  if (overview && tagline && !englishOriginal) {
     return { data: primary, locale: { overview: "original" } };
   }
 
-  const fallback = await english();
-  if (!fallback.ok) {
-    return {
-      data: primary,
-      locale: { overview: overview ? "original" : "empty" },
-    };
-  }
-
-  const overviewResult = overview
-    ? { text: overview, locale: "original" as TextLocale }
-    : await translateOrEnglish(fallback.data.overview.trim(), signal);
+  const fallback = englishOriginal || !overview || !tagline ? await english() : null;
+  const fallbackData = fallback?.ok ? fallback.data : null;
+  const overviewSource = englishOriginal
+    ? fallbackData?.overview.trim() || overview
+    : overview || fallbackData?.overview.trim() || "";
+  const shouldTranslate = englishOriginal || !overview;
+  const overviewResult = shouldTranslate
+    ? await translateOrEnglish(overviewSource, signal)
+    : { text: overviewSource, locale: "original" as TextLocale };
 
   return {
     data: {
       ...primary,
       overview: overviewResult.text,
-      tagline: tagline || fallback.data.tagline.trim(),
+      tagline: tagline || fallbackData?.tagline.trim() || "",
     },
     locale: { overview: overviewResult.locale },
   };

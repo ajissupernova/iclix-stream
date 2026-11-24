@@ -357,12 +357,6 @@ export default function TvDetail() {
                 </li>
               ))}
             </ul>
-            {(seasonState.data.englishOverviews || seasonState.data.englishNames) && (
-              <div className="mt-4 space-y-1 text-xs text-mist">
-                {seasonState.data.englishOverviews && <p>{copy.tv.englishOverviewNote}</p>}
-                {seasonState.data.englishNames && <p>{copy.tv.englishNameNote}</p>}
-              </div>
-            )}
           </>
         )}
       </section>

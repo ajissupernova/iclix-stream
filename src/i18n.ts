@@ -18,7 +18,6 @@ const id = {
     seeAll: "Lihat semua",
     notAvailable: "Informasi tidak tersedia",
     overviewEmpty: "Sinopsis tidak tersedia.",
-    englishTextNote: "Sebagian teks hanya tersedia dalam bahasa Inggris.",
     skipToContent: "Lewati ke konten",
     trailer: "Tonton trailer",
     trailerDialog: "Trailer",
@@ -168,8 +167,6 @@ const id = {
     episodeCount: (count: number) => `${count} episode`,
     loadingEpisodes: "Memuat episode...",
     episodesError: "Daftar episode tidak bisa dimuat.",
-    englishOverviewNote: "Sebagian sinopsis episode hanya tersedia dalam bahasa Inggris.",
-    englishNameNote: "Sebagian judul episode masih dalam bahasa Inggris.",
     seasonUnavailable: "Musim tidak tersedia.",
     castSection: "Pemeran",
     mainCast: "Pemeran utama",
@@ -264,9 +261,6 @@ const id = {
     privacyHeading: "Data di perangkat Anda",
     privacyBody:
       "Daftar Saya dan pilihan bahasa disimpan di localStorage peramban ini dan tidak dikirim ke server iClix.",
-    translationHeading: "Catatan terjemahan",
-    translationBody:
-      "Bila teks bahasa Indonesia belum tersedia di TMDb, iClix menampilkan terjemahan otomatis dan menandainya dengan catatan kecil di bawah teks.",
   },
 };
 
@@ -285,7 +279,6 @@ const en: Copy = {
     seeAll: "See all",
     notAvailable: "Not available",
     overviewEmpty: "No overview is available.",
-    englishTextNote: "Some text is only available in English.",
     skipToContent: "Skip to content",
     trailer: "Watch trailer",
     trailerDialog: "Trailer",
@@ -437,8 +430,6 @@ const en: Copy = {
     episodeCount: (count) => `${count} ${count === 1 ? "episode" : "episodes"}`,
     loadingEpisodes: "Loading episodes...",
     episodesError: "The episode list could not be loaded.",
-    englishOverviewNote: "Some episode overviews are only available in English.",
-    englishNameNote: "Some episode titles are still in English.",
     seasonUnavailable: "Season is not available.",
     castSection: "Cast",
     mainCast: "Main cast",
@@ -533,9 +524,6 @@ const en: Copy = {
     privacyHeading: "Data on your device",
     privacyBody:
       "My List and your language choice are stored in this browser's localStorage and are not sent to the iClix server.",
-    translationHeading: "Translation notes",
-    translationBody:
-      "When Indonesian text is not available on TMDb, iClix shows an automatic translation and marks it with a small note below the text.",
   },
 };
 

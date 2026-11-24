@@ -304,9 +304,6 @@ function Biography({ id, text }: { id: number; text: string }) {
         <p className="mt-3 whitespace-pre-line leading-relaxed text-paper/90">
           {fallback.data.text}
         </p>
-        {fallback.data.locale === "english" && (
-          <p className="mt-2 text-xs text-mist">{copy.common.englishTextNote}</p>
-        )}
       </>
     );
   }
