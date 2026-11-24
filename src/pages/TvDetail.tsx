@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { backdropUrl, posterUrl, stillUrl } from "../api/images";
 import { api } from "../api/endpoints";
@@ -45,7 +45,8 @@ export default function TvDetail() {
   const numericId = Number(id);
   const valid = Number.isInteger(numericId) && numericId > 0;
   const [selectedSeason, setSelectedSeason] = useState<number | null>(null);
-  const [selectedEpisode, setSelectedEpisode] = useState<number>(1);
+  const [playbackSeason, setPlaybackSeason] = useState<number | null>(null);
+  const [playbackEpisode, setPlaybackEpisode] = useState<number>(1);
 
   const state = useApi<ShowView>(
     async (signal) => {
@@ -163,11 +164,6 @@ export default function TvDetail() {
     [show?.id, seasonNumber, lang, isEn, copy],
   );
 
-  useEffect(() => {
-    const firstEpisode = seasonState.data?.detail.episodes[0]?.episode_number ?? 1;
-    setSelectedEpisode(firstEpisode);
-  }, [seasonNumber, seasonState.data?.detail.episodes]);
-
   const similarItems = useMemo(() => pageToItems(show?.similar, "tv", 15), [show?.similar]);
   const recommendedItems = useMemo(
     () => pageToItems(show?.recommendations, "tv", 15),
@@ -214,14 +210,11 @@ export default function TvDetail() {
     );
   }
 
-  const activeEpisodeNumber =
-    seasonState.data?.detail.episodes.some((ep) => ep.episode_number === selectedEpisode)
-      ? selectedEpisode
-      : (seasonState.data?.detail.episodes[0]?.episode_number ?? 1);
+  const activePlaybackSeason = playbackSeason ?? defaultSeason;
   const targetId = show.external_ids?.imdb_id || show.id;
   const embedUrl =
-    targetId && seasonNumber !== null
-      ? `https://embedmaster.link/tv/${targetId}/${seasonNumber}/${activeEpisodeNumber}`
+    targetId && activePlaybackSeason !== null
+      ? `https://embedmaster.link/tv/${targetId}/${activePlaybackSeason}/${playbackEpisode}`
       : null;
 
   const crew = show.credits?.crew ?? [];
@@ -310,13 +303,14 @@ export default function TvDetail() {
                 <li key={episode.id}>
                   <button
                     type="button"
-                    aria-pressed={activeEpisodeNumber === episode.episode_number}
-                    onClick={() => {
-                      setSelectedEpisode(episode.episode_number);
-                      document.getElementById("movie-player-heading")?.scrollIntoView({ behavior: "smooth" });
-                    }}
-                    className={`grid w-full gap-4 rounded-card border p-4 text-left transition sm:grid-cols-[180px_1fr] ${
-                      activeEpisodeNumber === episode.episode_number
+              aria-pressed={activePlaybackSeason === seasonNumber && playbackEpisode === episode.episode_number}
+              onClick={() => {
+                if (seasonNumber !== null) setPlaybackSeason(seasonNumber);
+                setPlaybackEpisode(episode.episode_number);
+                document.getElementById("movie-player")?.scrollIntoView({ behavior: "smooth" });
+              }}
+              className={`grid w-full gap-4 rounded-card border p-4 text-left transition sm:grid-cols-[180px_1fr] ${
+                activePlaybackSeason === seasonNumber && playbackEpisode === episode.episode_number
                         ? "border-clix bg-dusk"
                         : "border-line bg-dusk/70 hover:border-haze"
                     }`}

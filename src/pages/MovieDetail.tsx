@@ -173,10 +173,21 @@ export default function MovieDetail() {
       <MoviePlayer
         title={title}
         embedUrl={embedUrl}
-        backdropSrc={backdropUrl(movie.backdrop_path)}
       />
 
       <section className="relative isolate overflow-hidden">
+        {movie.backdrop_path && (
+          <div className="pointer-events-none absolute inset-0 -z-10">
+            <TmdbImage
+              kind="backdrop"
+              fill
+              eager
+              src={backdropUrl(movie.backdrop_path)}
+              alt=""
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-night/55 via-night/80 to-night" />
+          </div>
+        )}
         <div className="mx-auto grid max-w-7xl gap-8 px-4 pb-12 pt-10 sm:px-6 md:grid-cols-[260px_1fr] md:pt-16">
           <div className="mx-auto w-48 md:mx-0 md:w-full">
             <TmdbImage

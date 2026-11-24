@@ -26,7 +26,7 @@ export default function MoviePlayer({
   if (iframeUrl) {
     iframeUrl.searchParams.set("skin", "onyx");
     iframeUrl.searchParams.set("welcome_page", "off");
-    iframeUrl.searchParams.set("autoplay", "on");
+    iframeUrl.searchParams.set("autoplay", "off");
     if (subtitleSrc) {
       iframeUrl.searchParams.append("sub_url[]", subtitleSrc);
       iframeUrl.searchParams.append("sub_label[]", subtitleLabel || copy.movie.indonesianSubtitles);
@@ -35,8 +35,9 @@ export default function MoviePlayer({
 
   return (
     <section
-      aria-labelledby="movie-player-heading"
-      className="relative isolate mt-4 overflow-hidden py-7 sm:py-10"
+      id="movie-player"
+      aria-label={copy.movie.playerHeading}
+      className="relative isolate overflow-hidden py-4 sm:py-8"
     >
       {backdropSrc && (
         <div className="absolute inset-0 -z-10">
@@ -44,10 +45,7 @@ export default function MoviePlayer({
           <div className="absolute inset-0 bg-gradient-to-b from-night/75 via-night/80 to-night" />
         </div>
       )}
-      <div className="mx-auto max-w-4xl px-4 sm:px-6">
-        <h2 id="movie-player-heading" className="mb-3 font-display text-2xl font-bold tracking-tight">
-          {copy.movie.playerHeading}
-        </h2>
+      <div className="mx-auto max-w-7xl px-3 sm:px-6">
         <div className="aspect-video overflow-hidden rounded-panel border border-line bg-black">
           {embedUrl ? (
             <iframe
@@ -56,7 +54,7 @@ export default function MoviePlayer({
               title={copy.movie.playerFor(title)}
               width="100%"
               height="100%"
-              allow="autoplay *; fullscreen *; picture-in-picture *; encrypted-media *"
+              allow="fullscreen *; picture-in-picture *; encrypted-media *"
               allowFullScreen
               referrerPolicy="origin"
               className="h-full w-full border-0"
