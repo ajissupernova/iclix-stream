@@ -13,7 +13,6 @@ const LINKS = [
   { to: "/katalog", label: "Film", en: "Movies" },
   { to: "/serial", label: "Serial", en: "TV Series" },
   { to: "/cari", label: "Cari", en: "Search" },
-  { to: "/tentang", label: "Tentang", en: "About" },
 ];
 
 function CountBadge({ count }: { count: number }) {

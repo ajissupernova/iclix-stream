@@ -16,7 +16,6 @@ import Admin from "./pages/Admin";
 import CollectionPage from "./pages/Collection";
 
 // Halaman detail dan halaman sekunder dimuat saat dibutuhkan agar bundel awal tetap ringan.
-const About = lazy(() => import("./pages/About"));
 const MovieDetail = lazy(() => import("./pages/MovieDetail"));
 const MyList = lazy(() => import("./pages/MyList"));
 const PersonDetail = lazy(() => import("./pages/PersonDetail"));
@@ -73,7 +72,6 @@ function Shell() {
             <Route path="/cari" element={<Search />} />
             <Route path="/orang/:id" element={<PersonDetail />} />
             <Route path="/daftar-saya" element={<MyList />} />
-            <Route path="/tentang" element={<About />} />
             <Route path="/koleksi/:slug" element={<CollectionPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

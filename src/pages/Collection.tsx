@@ -106,7 +106,7 @@ export default function CollectionPage() {
             {collection.titleIds.map((item) => {
               const media = state.titles.get(keyFor(item));
               return <li key={keyFor(item)}>
-                {media ? <MediaCard item={media} showType /> : <div className="aspect-[2/3] rounded-card border border-line bg-dusk p-3 text-sm text-mist">{item.label || `Judul TMDb ${item.id} tidak dapat dimuat.`}</div>}
+                {media ? <MediaCard item={media} showType /> : <div className="aspect-[2/3] rounded-card border border-line bg-dusk p-3 text-sm text-mist">{item.label || "Judul tidak dapat dimuat."}</div>}
               </li>;
             })}
           </ul>
@@ -128,7 +128,7 @@ export default function CollectionPage() {
                       <span aria-hidden="true" className="absolute left-0 top-0 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-clix/50 bg-night font-serif text-sm font-bold italic tabular-nums text-clix">
                         {String(index + 1).padStart(2, "0")}
                       </span>
-                      {media ? <MediaCard item={media} showType /> : <div className="aspect-[2/3] rounded-card border border-line bg-dusk p-3 text-sm text-mist">{item.label || `Judul TMDb ${item.id} tidak dapat dimuat.`}</div>}
+                      {media ? <MediaCard item={media} showType /> : <div className="aspect-[2/3] rounded-card border border-line bg-dusk p-3 text-sm text-mist">{item.label || "Judul tidak dapat dimuat."}</div>}
                       {item.watchOrder && <p className="mt-2 text-sm leading-snug text-mist">{item.watchOrder}</p>}
                     </li>
                   );

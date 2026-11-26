@@ -239,28 +239,8 @@ const id = {
   },
   footer: {
     tagline: "Temukan film dan serial TV, lihat detailnya, lalu simpan judul favorit Anda.",
-    about: "Tentang",
     myList: "Daftar Saya",
-    attribution: "Data film dan serial berasal dari The Movie Database (TMDb).",
-    tmdbLink: "Buka The Movie Database (tab baru)",
     navLabel: "Tautan kaki halaman",
-  },
-  about: {
-    title: "Tentang iClix",
-    featuresHeading: "Yang bisa Anda lakukan di sini",
-    features: [
-      "Menjelajahi film populer, sedang tren, rating tertinggi, sedang tayang, dan akan tayang.",
-      "Menyaring dan mengurutkan katalog film serta serial berdasarkan genre, rating, tanggal rilis, dan judul.",
-      "Mencari film, serial, dan orang berdasarkan judul.",
-      "Membaca sinopsis asli, membuka profil sutradara dan pemeran, serta menelusuri filmografi.",
-      "Menyimpan judul ke Daftar Saya, yang hanya tersimpan di peramban Anda.",
-    ],
-    dataHeading: "Sumber data",
-    dataBody:
-      "Poster, sinopsis, kredit, dan trailer berasal dari TMDb. Trailer membuka video resmi di YouTube. iClix tidak memutar, menyimpan, atau mendistribusikan video.",
-    privacyHeading: "Data di perangkat Anda",
-    privacyBody:
-      "Daftar Saya dan pilihan bahasa disimpan di localStorage peramban ini dan tidak dikirim ke server iClix.",
   },
 };
 
@@ -502,28 +482,8 @@ const en: Copy = {
   },
   footer: {
     tagline: "Find movies and TV series, read their details, and save titles to your list.",
-    about: "About",
     myList: "My List",
-    attribution: "Movie and TV data comes from The Movie Database (TMDb).",
-    tmdbLink: "Open The Movie Database (new tab)",
     navLabel: "Footer links",
-  },
-  about: {
-    title: "About iClix",
-    featuresHeading: "What you can do here",
-    features: [
-      "Browse popular, trending, top rated, now playing, and upcoming movies.",
-      "Filter and sort the movie and TV catalogs by genre, rating, release date, and title.",
-      "Search movies, TV series, and people by title.",
-      "Read original overviews, open director and cast profiles, and explore filmographies.",
-      "Save titles to My List, which is stored only in your browser.",
-    ],
-    dataHeading: "Where the data comes from",
-    dataBody:
-      "Posters, overviews, credits, and trailers come from TMDb. Trailers open the official video on YouTube. iClix does not stream, store, or distribute video.",
-    privacyHeading: "Data on your device",
-    privacyBody:
-      "My List and your language choice are stored in this browser's localStorage and are not sent to the iClix server.",
   },
 };
 

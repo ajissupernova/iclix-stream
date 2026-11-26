@@ -81,7 +81,6 @@ Butuh Node.js 18 atau lebih baru.
 - Detail serial (`/serial/:id`): pilih musim, daftar episode, kreator, pemeran
 - Profil orang (`/orang/:id`): biografi dan filmografi film/serial
 - Daftar Saya (`/daftar-saya`): tersimpan di localStorage perangkat
-- Tentang (`/tentang`): atribusi dan disclaimer TMDB
 - Tombol bahasa ID/EN (mengubah bahasa data yang diminta dari TMDb)
 - Sinopsis, biografi, dan sinopsis episode yang belum tersedia di id-ID
   diterjemahkan otomatis dari bahasa Inggris; tagline dibiarkan apa adanya
