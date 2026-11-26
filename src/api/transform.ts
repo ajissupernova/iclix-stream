@@ -17,6 +17,7 @@ interface MovieLike {
   original_title?: string;
   original_name?: string;
   original_language?: string;
+  genre_ids?: number[];
   release_date?: string;
   first_air_date?: string;
   vote_average?: number;
@@ -46,5 +47,14 @@ export function pageToItems<T extends MovieLike>(
   limit = 15,
 ): MediaItem[] | null {
   if (!page) return null;
-  return page.results.slice(0, limit).map((item) => toMediaItem(item, mediaType));
+  return page.results
+    .filter((item) => !isExcludedTitle(item, mediaType))
+    .slice(0, limit)
+    .map((item) => toMediaItem(item, mediaType));
+}
+
+export function isExcludedTitle(item: { genre_ids?: number[] }, mediaType: "movie" | "tv"): boolean {
+  return (item.genre_ids ?? []).some((id) =>
+    id === 99 || (mediaType === "tv" && (id === 10763 || id === 10764 || id === 10767)),
+  );
 }

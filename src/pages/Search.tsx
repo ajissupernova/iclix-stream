@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { profileUrl } from "../api/images";
 import { api } from "../api/endpoints";
-import { toMediaItem } from "../api/transform";
+import { isExcludedTitle, toMediaItem } from "../api/transform";
 import { useLanguage } from "../context/Language";
 import { useApi } from "../hooks/useApi";
 import { useDebounced } from "../hooks/useDebounced";
@@ -107,7 +107,7 @@ export default function Search() {
     if (!data) return null;
     if (type === "tv") return [];
     return data.results
-      .filter((r) => r.media_type !== "tv")
+      .filter((r) => r.media_type !== "tv" && !isExcludedTitle(r, "movie"))
       .map((r) => toMediaItem(r, "movie"));
   }, [results.data, type]);
 
@@ -115,7 +115,9 @@ export default function Search() {
     const data = results.data;
     if (!data) return null;
     if (type === "movie") return [];
-    return data.results.filter((r) => r.media_type !== "movie").map((r) => toMediaItem(r, "tv"));
+    return data.results
+      .filter((r) => r.media_type !== "movie" && !isExcludedTitle(r, "tv"))
+      .map((r) => toMediaItem(r, "tv"));
   }, [results.data, type]);
 
   const people = useMemo(() => {
