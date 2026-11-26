@@ -10,9 +10,9 @@
   "theme_color": "#0F0E24",
   "icons": [
     {
-      "src": "/favicon.svg",
+      "src": "/brand/iclixfavicon.webp",
       "sizes": "any",
-      "type": "image/svg+xml",
+      "type": "image/webp",
       "purpose": "any"
     }
   ]

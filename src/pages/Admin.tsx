@@ -860,7 +860,7 @@ export default function Admin() {
     return (
       <main className="admin-auth-shell grid min-h-screen place-items-center bg-night px-4 py-12">
         <Panel className="w-full max-w-md">
-          <a href="/" className="font-display text-xl font-extrabold"><span className="text-brand">i</span>Clix <span className="text-mist">/ studio</span></a>
+          <a href="/" className="inline-flex items-center gap-2"><img src="/brand/logoiclix.webp" alt="iClix" className="h-6 w-auto" /><span className="text-mist">/ studio</span></a>
           <h1 className="mt-8 font-display text-3xl font-bold">Masuk ke ruang kurasi</h1>
           <p className="mt-2 leading-relaxed text-mist">Panel ini tidak memakai akun. Gunakan kunci admin yang disiapkan di server.</p>
           <form onSubmit={unlock} className="mt-6 space-y-4">
@@ -888,7 +888,7 @@ export default function Admin() {
     <div className="admin-shell min-h-screen bg-night text-paper">
       <header className="admin-header sticky top-0 z-20 border-b border-line bg-night/95 backdrop-blur">
         <div className="admin-header-inner mx-auto flex max-w-[1500px] items-center justify-between gap-3 px-4 py-3 sm:px-6">
-          <a href="/" className="font-display text-xl font-extrabold"><span className="text-brand">i</span>Clix <span className="text-sm font-medium text-mist">studio</span></a>
+          <a href="/" className="inline-flex items-center gap-2"><img src="/brand/logoiclix.webp" alt="iClix" className="h-7 w-auto" /><span className="text-sm font-medium text-mist">studio</span></a>
           <div className="flex items-center gap-2">
             {dirty && <span className="hidden text-sm text-gold sm:inline">Ada perubahan belum tersimpan</span>}
             <button type="button" disabled={busy || !dirty} onClick={() => void save(false)} className="btn-secondary disabled:cursor-not-allowed disabled:opacity-50">Simpan draft</button>

@@ -9,9 +9,7 @@ export default function Footer() {
     <footer className="mt-16 border-t border-line">
       <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-10 sm:flex-row sm:items-start sm:justify-between sm:px-6">
         <div className="max-w-sm">
-          <p className="font-display text-lg font-bold text-paper">
-            <span className="text-brand">i</span>Clix
-          </p>
+          <img src="/brand/logoiclix.webp" alt="iClix" className="h-6 w-auto" />
           <p className="mt-2 text-sm leading-relaxed text-mist">{copy.footer.tagline}</p>
         </div>
         <nav aria-label={copy.footer.navLabel} className="flex flex-wrap gap-2">

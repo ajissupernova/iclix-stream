@@ -11,6 +11,7 @@ const DEFAULTS = {
   backdropSmall: "w780",
   logo: "w500",
   profile: "w185",
+  profileFull: "original",
   still: "w300",
 };
 
@@ -32,6 +33,7 @@ function applyConfiguration(config: TmdbConfiguration): void {
     backdropSmall: pick(images.backdrop_sizes, "w780", DEFAULTS.backdropSmall),
     logo: pick(images.logo_sizes ?? [], "w500", DEFAULTS.logo),
     profile: pick(images.profile_sizes, "w185", DEFAULTS.profile),
+    profileFull: pick(images.profile_sizes, "original", DEFAULTS.profileFull),
     still: pick(images.still_sizes, "w300", DEFAULTS.still),
   };
 }
@@ -75,6 +77,11 @@ export const heroBackdropUrl = (path: string | null | undefined): string | null 
 /** Logo judul resmi dari TMDb, sudah transparan jadi bisa langsung menempel di backdrop. */
 export const logoUrl = (path: string | null | undefined): string | null => url(path, sizes.logo);
 
-export const profileUrl = (path: string | null | undefined): string | null => url(path, sizes.profile);
+/**
+ * Foto orang (pemeran, sutradara, kreator) memakai berkas original TMDb,
+ * bukan versi w185 yang sudah diperkecil, agar tidak pecah saat tampil besar.
+ */
+export const profileUrl = (path: string | null | undefined): string | null =>
+  url(path, sizes.profileFull);
 
 export const stillUrl = (path: string | null | undefined): string | null => url(path, sizes.still);

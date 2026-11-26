@@ -76,12 +76,8 @@ export default function Navbar() {
         aria-label={isEn ? "Main navigation" : "Navigasi utama"}
         className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6"
       >
-        <Link
-          to="/"
-          aria-label="iClix"
-          className="font-display text-2xl font-extrabold tracking-tight"
-        >
-          <span className="text-brand">i</span>Clix
+        <Link to="/" className="inline-flex min-h-11 items-center">
+          <img src="/brand/logoiclix.webp" alt="iClix" className="h-8 w-auto sm:h-9" />
         </Link>
 
         <div className="hidden items-center gap-1 lg:flex">
