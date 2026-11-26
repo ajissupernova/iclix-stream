@@ -115,7 +115,7 @@ export default function HeroCarousel({ items }: { items: HeroTitle[] }) {
           {logo ? (
             <Link
               to={active.mediaType === "movie" ? `/film/${active.id}` : `/serial/${active.id}`}
-              aria-label={`${title} - ${copy.hero.details}`}
+              aria-label={`${title} - ${active.mediaType === "movie" ? copy.hero.watchMovie : copy.hero.watchSeries}`}
               className="inline-flex max-h-full max-w-full items-center justify-center rounded-sm sm:justify-start"
             >
               <img
@@ -157,7 +157,12 @@ export default function HeroCarousel({ items }: { items: HeroTitle[] }) {
             to={active.mediaType === "movie" ? `/film/${active.id}` : `/serial/${active.id}`}
             className="btn-primary min-h-11 min-w-0 flex-1 justify-center px-3 py-2 text-xs sm:flex-none sm:px-6 sm:py-2.5 sm:text-sm"
           >
-            <span className="truncate">{copy.hero.details}</span>
+            <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0" fill="currentColor" aria-hidden="true">
+              <path d="M8 5.5v13l11-6.5z" />
+            </svg>
+            <span className="truncate">
+              {active.mediaType === "movie" ? copy.hero.watchMovie : copy.hero.watchSeries}
+            </span>
           </Link>
           {trailerKey && (
             <TrailerButton

@@ -57,7 +57,8 @@ const id = {
   hero: {
     label: "Film pilihan",
     originalLanguage: "Bahasa asli",
-    details: "Lihat detail film",
+    watchMovie: "Tonton film",
+    watchSeries: "Tonton serial",
     trailer: "Tonton trailer",
     show: (title: string) => `Tampilkan ${title}`,
     pauseSlideshow: "Jeda pergantian film",
@@ -298,7 +299,8 @@ const en: Copy = {
   hero: {
     label: "Featured movies",
     originalLanguage: "Original language",
-    details: "View movie details",
+    watchMovie: "Watch Movie",
+    watchSeries: "Watch Series",
     trailer: "Watch trailer",
     show: (title) => `Show ${title}`,
     pauseSlideshow: "Pause slideshow",
