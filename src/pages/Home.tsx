@@ -73,7 +73,9 @@ export default function Home() {
   );
   if (siteContent.spotlight.mode === "popular") requiredCatalogs.add("popular-movies");
   if (siteContent.spotlight.mode === "trending" || siteContent.spotlight.mode === "random") requiredCatalogs.add("trending");
-  const catalogEnabled = (key: string) => siteContentLoaded && requiredCatalogs.has(key);
+  const catalogEnabled = (key: string) =>
+    (siteContentLoaded && requiredCatalogs.has(key)) ||
+    (!siteContentLoaded && (key === "trending" || key === "popular-movies"));
   const trending = useApi((s) => api.trendingMovies(s), [lang], catalogEnabled("trending"));
   const popular = useApi((s) => api.popularMovies(s), [lang], catalogEnabled("popular-movies"));
   const topRated = useApi((s) => api.topRatedMovies(s), [lang], catalogEnabled("top-rated"));

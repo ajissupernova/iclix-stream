@@ -5,7 +5,7 @@ export type ApiResult<T> =
 export type ApiLanguage = "id-ID" | "en-US";
 
 const LANGUAGE_KEY = "iclix:bahasa";
-const CLIENT_TTL = 60_000;
+const CLIENT_TTL = 5 * 60_000;
 const CLIENT_CACHE_LIMIT = 300;
 
 let language: ApiLanguage = readStoredLanguage();

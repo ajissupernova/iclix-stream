@@ -84,14 +84,17 @@ export function useHeroDetails(titles: CuratedTitle[], lang: ApiLanguage): HeroD
         ? { ...response.data, ...requested.find((entry) => entry.id === id && entry.type === type), mediaType: "movie" as const }
         : { ...response.data, ...requested.find((entry) => entry.id === id && entry.type === type), mediaType: "tv" as const };
     }))
-      .then((results) => Promise.all(results.filter((item): item is HeroTitle => item !== null).map(localizeTitle)))
-      .then((items) => {
+      .then((results) => {
         if (!active) return;
+        const items = results.filter((item): item is HeroTitle => item !== null);
         setState({
           idKey,
           items,
           loading: false,
           error: items.length === 0 ? "Pilihan spotlight tidak bisa dimuat." : null,
+        });
+        void Promise.all(items.map(localizeTitle)).then((localized) => {
+          if (active) setState((current) => current.idKey === idKey ? { ...current, items: localized } : current);
         });
       });
 
