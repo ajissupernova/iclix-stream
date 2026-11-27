@@ -62,7 +62,7 @@ function CountBadge({ count }: { count: number }) {
   return (
     <span
       aria-hidden="true"
-      className="absolute -right-1 -top-1 min-w-5 rounded-full bg-clix px-1 text-center text-[10px] font-bold leading-5 text-night"
+      className="absolute -right-1 -top-1 min-w-5 rounded-full bg-clix px-1 text-center text-[10px] font-bold leading-5 text-paper"
     >
       {count > 99 ? "99+" : count}
     </span>
@@ -99,7 +99,7 @@ export default function Navbar() {
       <NavIcon name="list" />
       {isEn ? "My List" : "Daftar Saya"}
       {items.length > 0 && (
-        <span className="ml-1.5 rounded-full bg-clix px-1.5 py-0.5 text-xs font-semibold text-night">
+        <span className="ml-1.5 rounded-full bg-clix px-1.5 py-0.5 text-xs font-semibold text-paper">
           {items.length}
         </span>
       )}
@@ -167,7 +167,7 @@ export default function Navbar() {
           <Link
             to="/daftar-saya"
             aria-label={items.length > 0 ? `${isEn ? "My List" : "Daftar Saya"}, ${watchlistLabel}` : isEn ? "My List" : "Daftar Saya"}
-            className="icon-btn relative lg:hidden"
+            className="icon-btn relative max-[360px]:hidden lg:hidden"
           >
             <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M6 4h12v16l-6-4-6 4z" />
@@ -203,7 +203,7 @@ export default function Navbar() {
                   <NavIcon name={link.icon} />
                   {isEn ? link.en : link.label}
                   {link.to === "/daftar-saya" && items.length > 0 && (
-                    <span className="ml-2 rounded-full bg-clix px-1.5 py-0.5 text-xs font-semibold text-night">
+                    <span className="ml-2 rounded-full bg-clix px-1.5 py-0.5 text-xs font-semibold text-paper">
                       {items.length}
                     </span>
                   )}

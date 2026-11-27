@@ -255,11 +255,17 @@ export default function TvDetail() {
       <section
         id="musim"
         aria-label={copy.tv.seasonsSection}
-        className="mx-auto mt-8 max-w-7xl scroll-mt-36 px-4 sm:px-6"
+        className="mx-auto mt-5 max-w-7xl scroll-mt-36 px-3 sm:mt-8 sm:px-6"
       >
-        <h2 className="font-display text-2xl font-bold tracking-tight">{copy.tv.seasonsHeading}</h2>
+        <h2 className="font-display text-xl font-bold tracking-tight sm:text-2xl">
+          {copy.tv.seasonsHeading}
+        </h2>
 
-        <div role="group" aria-label={copy.tv.chooseSeason} className="no-scrollbar mt-4 flex gap-2 overflow-x-auto pb-1">
+        <div
+          role="group"
+          aria-label={copy.tv.chooseSeason}
+          className="no-scrollbar mt-3 flex gap-2 overflow-x-auto pb-1 sm:mt-4"
+        >
           {show.seasons.map((season) => (
             <button
               key={season.id}
@@ -298,19 +304,19 @@ export default function TvDetail() {
 
         {!seasonState.loading && !seasonState.error && seasonState.data && (
           <>
-            <ul className="mt-6 space-y-5">
+            <ul className="mt-4 space-y-3 sm:mt-6 sm:space-y-5">
               {seasonState.data.detail.episodes.map((episode) => (
                 <li key={episode.id}>
                   <button
                     type="button"
-              aria-pressed={activePlaybackSeason === seasonNumber && playbackEpisode === episode.episode_number}
-              onClick={() => {
-                if (seasonNumber !== null) setPlaybackSeason(seasonNumber);
-                setPlaybackEpisode(episode.episode_number);
-                document.getElementById("movie-player")?.scrollIntoView({ behavior: "smooth" });
-              }}
-              className={`grid w-full gap-4 rounded-card border p-4 text-left transition sm:grid-cols-[180px_1fr] ${
-                activePlaybackSeason === seasonNumber && playbackEpisode === episode.episode_number
+                    aria-pressed={activePlaybackSeason === seasonNumber && playbackEpisode === episode.episode_number}
+                    onClick={() => {
+                      if (seasonNumber !== null) setPlaybackSeason(seasonNumber);
+                      setPlaybackEpisode(episode.episode_number);
+                      document.getElementById("movie-player")?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                    className={`grid w-full min-w-0 grid-cols-[minmax(100px,34%)_minmax(0,1fr)] items-start gap-3 rounded-card border p-2.5 text-left transition sm:grid-cols-[180px_minmax(0,1fr)] sm:gap-4 sm:p-4 ${
+                      activePlaybackSeason === seasonNumber && playbackEpisode === episode.episode_number
                         ? "border-clix bg-dusk"
                         : "border-line bg-dusk/70 hover:border-haze"
                     }`}
@@ -321,16 +327,18 @@ export default function TvDetail() {
                       alt={copy.common.stillAlt(episode.name)}
                       className="rounded-card ring-1 ring-paper/10"
                     />
-                    <span>
+                    <span className="min-w-0">
                       <span className="block text-xs text-mist">
                         Episode {episode.episode_number}
                         {episode.runtime ? ` • ${formatDuration(episode.runtime)}` : ""}
                         {episode.air_date ? ` • ${formatDate(episode.air_date)}` : ""}
                         {episode.vote_average > 0 ? ` • ${episode.vote_average.toFixed(1)}` : ""}
                       </span>
-                      <span className="mt-1 block font-display text-lg font-bold text-paper">{episode.name}</span>
+                      <span className="mt-0.5 block break-words font-display text-base font-bold leading-snug text-paper sm:mt-1 sm:text-lg">
+                        {episode.name}
+                      </span>
                       {episode.overview && (
-                        <span className="mt-1.5 block line-clamp-3 text-sm leading-relaxed text-paper/85">
+                        <span className="mt-1 block line-clamp-2 text-xs leading-snug text-paper/85 sm:mt-1.5 sm:line-clamp-3 sm:text-sm sm:leading-relaxed">
                           {episode.overview}
                         </span>
                       )}
@@ -451,7 +459,7 @@ export default function TvDetail() {
                   {creators.map((p, i) => (
                     <span key={p.id}>
                       {i > 0 && ", "}
-                      <Link to={`/orang/${p.id}`} className="transition hover:text-clix">
+                      <Link to={`/orang/${p.id}`} className="text-clixText transition hover:text-paper">
                         {p.name}
                       </Link>
                     </span>

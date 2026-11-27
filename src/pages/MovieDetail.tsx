@@ -46,7 +46,7 @@ function uniquePeople(people: CrewMember[]): CrewMember[] {
 
 function PersonLink({ person, children }: { person: { id: number; name: string }; children?: ReactNode }) {
   return (
-    <Link to={`/orang/${person.id}`} className="transition hover:text-clix">
+    <Link to={`/orang/${person.id}`} className="text-clixText transition hover:text-paper">
       {children ?? person.name}
     </Link>
   );
@@ -335,7 +335,7 @@ export default function MovieDetail() {
                 type="button"
                 onClick={() => setShowAllCast((v) => !v)}
                 aria-expanded={showAllCast}
-                className="min-h-11 text-sm font-semibold text-clix transition hover:text-paper"
+                className="min-h-11 text-sm font-semibold text-clixText transition hover:text-paper"
               >
                 {showAllCast
                   ? copy.movie.showMainCastOnly

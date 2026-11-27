@@ -35,7 +35,7 @@ export default function WatchlistButton({ item, title, variant = "full", iconSty
         title={titleText}
         className={`flex h-11 w-11 items-center justify-center rounded-full border transition duration-150 active:scale-95 ${
           saved
-            ? "border-clix bg-clix text-night hover:bg-clixDeep"
+            ? "border-clix bg-clix text-paper hover:bg-clixDeep"
             : "border-line bg-night/80 text-paper hover:border-lineStrong hover:bg-panel"
         } ${className}`}
       >

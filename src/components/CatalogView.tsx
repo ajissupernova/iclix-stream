@@ -138,7 +138,7 @@ export default function CatalogView({ mediaType }: Props) {
               <button
                 type="button"
                 onClick={() => setParams({}, { replace: true })}
-                className="text-sm font-semibold text-clix transition hover:text-paper"
+                className="text-sm font-semibold text-clixText transition hover:text-paper"
               >
                 {copy.common.resetFilters}
               </button>

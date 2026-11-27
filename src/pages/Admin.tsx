@@ -886,23 +886,23 @@ export default function Admin() {
 
   return (
     <div className="admin-shell min-h-screen bg-night text-paper">
-      <header className="admin-header sticky top-0 z-20 border-b border-line bg-night/95 backdrop-blur">
+      <header className="admin-header sticky top-0 z-20 border-b border-line bg-night/95">
         <div className="admin-header-inner mx-auto flex max-w-[1500px] items-center justify-between gap-3 px-4 py-3 sm:px-6">
           <a href="/" className="inline-flex items-center gap-2"><img src="/brand/logoiclix.webp" alt="iClix" className="h-7 w-auto" /><span className="text-sm font-medium text-mist">studio</span></a>
           <div className="flex items-center gap-2">
-            {dirty && <span className="hidden text-sm text-gold sm:inline">Ada perubahan belum tersimpan</span>}
+            {dirty && <span className="text-xs text-gold sm:text-sm">Belum tersimpan</span>}
             <button type="button" disabled={busy || !dirty} onClick={() => void save(false)} className="btn-secondary disabled:cursor-not-allowed disabled:opacity-50">Simpan draft</button>
             <button type="button" disabled={busy || !hasUnpublishedChanges} onClick={() => void save(true)} className="btn-primary disabled:cursor-not-allowed disabled:opacity-50">Terbitkan</button>
             <button type="button" onClick={() => void logout()} className="btn-quiet">Kunci panel</button>
           </div>
         </div>
-      </header>
-      <div className="admin-layout mx-auto grid max-w-[1500px] gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[220px_minmax(0,1fr)] lg:py-8">
-        <nav aria-label="Navigasi pengelolaan" className="admin-nav flex gap-2 overflow-x-auto pb-1 lg:block lg:space-y-1">
+        <nav aria-label="Navigasi pengelolaan" className="admin-nav mx-auto flex max-w-[1500px] gap-1 overflow-x-auto px-4 sm:px-6">
           {NAV_ITEMS.map((item) => (
-            <button key={item.id} type="button" onClick={() => setActiveTab(item.id)} aria-current={activeTab === item.id ? "page" : undefined} className={`admin-nav-item min-h-11 shrink-0 rounded-lg px-4 text-left text-sm font-semibold transition lg:w-full ${activeTab === item.id ? "bg-haze text-paper" : "text-mist hover:bg-dusk hover:text-paper"}`}>{item.label}</button>
+            <button key={item.id} type="button" onClick={() => setActiveTab(item.id)} aria-current={activeTab === item.id ? "page" : undefined} className={`admin-nav-item min-h-11 shrink-0 rounded-lg px-4 text-left text-sm font-semibold transition ${activeTab === item.id ? "bg-haze text-paper" : "text-mist hover:bg-dusk hover:text-paper"}`}>{item.label}</button>
           ))}
         </nav>
+      </header>
+      <div className="admin-layout mx-auto max-w-[1500px] px-4 py-5 sm:px-6 lg:py-6">
         <main className="admin-content min-w-0">
           <div className="admin-page-heading mb-6">
             <p className="text-sm text-clix">PENGELOLAAN SITUS</p>

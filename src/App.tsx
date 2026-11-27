@@ -56,7 +56,7 @@ function Shell() {
       <ScrollToTop />
       <a
         href="#konten"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-clix focus:px-4 focus:py-2 focus:text-night"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-clix focus:px-4 focus:py-2 focus:text-paper"
       >
         {copy.common.skipToContent}
       </a>

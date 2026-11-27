@@ -176,7 +176,7 @@ export default function Home() {
                   <span className="relative max-w-2xl">
                     {collection.logoUrl ? <img src={collection.logoUrl} alt={collection.title} width="500" height="160" loading="lazy" decoding="async" className="mb-4 max-h-16 max-w-[min(100%,20rem)] object-contain object-left" /> : <span className="block font-display text-2xl font-bold sm:text-4xl">{collection.title}</span>}
                     <span className="block text-sm text-paper/90">{collection.description || `${curatedCollectionTitles(collection).length} judul pilihan`}</span>
-                    <span className="mt-3 inline-block text-sm font-semibold text-clix">Lihat koleksi</span>
+                    <span className="mt-3 inline-block text-sm font-semibold text-clixText">Lihat koleksi</span>
                   </span>
                 </Link>
               </section>

@@ -55,7 +55,7 @@
 
 @layer components {
   .btn-primary {
-    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-clix px-6 py-2.5 text-sm font-semibold text-night transition duration-200 ease-out hover:brightness-110 active:bg-clixDeep active:scale-[0.98];
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-clix px-6 py-2.5 text-sm font-semibold text-paper transition duration-200 ease-out hover:brightness-110 active:bg-clixDeep active:scale-[0.98];
   }
 
   .btn-secondary {
@@ -75,7 +75,7 @@
   }
 
   .chip-active {
-    @apply bg-clix text-night;
+    @apply bg-clix text-paper;
   }
 
   .chip-idle {
