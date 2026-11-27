@@ -90,18 +90,50 @@ function isIndonesianTitle(value: Record<string, unknown>): boolean {
   );
 }
 
+function isIndonesianPerson(value: Record<string, unknown>): boolean {
+  return typeof value.place_of_birth === "string" && /\bIndonesia\b/i.test(value.place_of_birth);
+}
+
+function isTitle(value: Record<string, unknown>): boolean {
+  return value.media_type === "movie" ||
+    value.media_type === "tv" ||
+    ("title" in value && "original_title" in value) ||
+    ("name" in value && "original_name" in value);
+}
+
+function hasForeignContribution(value: Record<string, unknown>): boolean {
+  const groups = [value.known_for];
+  for (const key of ["movie_credits", "tv_credits"]) {
+    const credit = value[key];
+    if (!credit || typeof credit !== "object") continue;
+    const { cast, crew } = credit as Record<string, unknown>;
+    groups.push(
+      ...(Array.isArray(cast) ? [cast] : []),
+      ...(Array.isArray(crew) ? [crew] : []),
+    );
+  }
+  return groups.some((group) =>
+    Array.isArray(group) && group.some((item) =>
+      item && typeof item === "object" && isTitle(item as Record<string, unknown>) &&
+      !isIndonesianTitle(item as Record<string, unknown>),
+    ),
+  );
+}
+
 function withoutIndonesianMovies(value: unknown): unknown {
   if (Array.isArray(value)) {
     return value
       .filter((item) => {
         if (!item || typeof item !== "object") return true;
-        const movie = item as Record<string, unknown>;
-        const isTitle =
-          movie.media_type === "movie" ||
-          movie.media_type === "tv" ||
-          ("title" in movie && "original_title" in movie) ||
-          ("name" in movie && "original_name" in movie);
-        return !isTitle || !isIndonesianTitle(movie);
+        const entry = item as Record<string, unknown>;
+        if (isTitle(entry)) return !isIndonesianTitle(entry);
+        if (entry.media_type === "person" && Array.isArray(entry.known_for) &&
+          entry.known_for.length > 0 &&
+          entry.known_for.every((credit) =>
+            credit && typeof credit === "object" && isTitle(credit as Record<string, unknown>) &&
+            isIndonesianTitle(credit as Record<string, unknown>),
+          )) return false;
+        return !isIndonesianPerson(entry) || hasForeignContribution(entry);
       })
       .map(withoutIndonesianMovies);
   }
@@ -139,6 +171,12 @@ function withoutUnreleasedTitles(value: unknown): unknown {
 
 function isUnreleasedDetail(value: unknown): boolean {
   return !!value && typeof value === "object" && hasNotPremiered(value as Record<string, unknown>);
+}
+
+function isExcludedPersonDetail(value: unknown): boolean {
+  return !!value && typeof value === "object" &&
+    isIndonesianPerson(value as Record<string, unknown>) &&
+    !hasForeignContribution(value as Record<string, unknown>);
 }
 
 function ttlFor(path: string): number {
@@ -207,9 +245,11 @@ function refreshCache(cacheKey: string, path: string, params: Record<string, str
       const detail = result.data && typeof result.data === "object"
         ? result.data as Record<string, unknown>
         : null;
+      const isPersonDetail = /^\/person\/\d{1,10}$/.test(path);
       if (
         result.status === 200 &&
-        (!isDetail || (detail !== null && !isUnreleasedDetail(detail) && !isIndonesianTitle(detail)))
+        (!isDetail || (detail !== null && !isUnreleasedDetail(detail) && !isIndonesianTitle(detail))) &&
+        (!isPersonDetail || (detail !== null && !isExcludedPersonDetail(detail)))
       ) {
         cacheSet(cacheKey, withoutUnreleasedTitles(withoutIndonesianMovies(result.data)), ttl);
       }
@@ -277,6 +317,9 @@ async function handleApi(pathname: string, search: string): Promise<{ status: nu
         cacheSeconds: 0,
       };
     }
+    if (/^\/person\/\d{1,10}$/.test(path) && isExcludedPersonDetail(hit.data)) {
+      return { status: 404, body: errorBody(404, "NOT_FOUND", "Orang tidak ditemukan."), cacheSeconds: 0 };
+    }
     return {
       status: 200,
       body: { ok: true, data: withoutUnreleasedTitles(withoutIndonesianMovies(hit.data)) },
@@ -292,6 +335,9 @@ async function handleApi(pathname: string, search: string): Promise<{ status: nu
     if (/^\/(movie|tv)\/\d{1,10}$/.test(path) && hit.data && typeof hit.data === "object" &&
       isIndonesianTitle(hit.data as Record<string, unknown>)) {
       return { status: 404, body: errorBody(404, "NOT_FOUND", "Film tidak ditemukan."), cacheSeconds: 0 };
+    }
+    if (/^\/person\/\d{1,10}$/.test(path) && isExcludedPersonDetail(hit.data)) {
+      return { status: 404, body: errorBody(404, "NOT_FOUND", "Orang tidak ditemukan."), cacheSeconds: 0 };
     }
     return {
       status: 200,
@@ -312,6 +358,9 @@ async function handleApi(pathname: string, search: string): Promise<{ status: nu
         body: errorBody(404, "NOT_FOUND", "Film tidak ditemukan."),
         cacheSeconds: 0,
       };
+    }
+    if (/^\/person\/\d{1,10}$/.test(path) && isExcludedPersonDetail(result.data)) {
+      return { status: 404, body: errorBody(404, "NOT_FOUND", "Orang tidak ditemukan."), cacheSeconds: 0 };
     }
     const data = withoutUnreleasedTitles(withoutIndonesianMovies(result.data));
     return { status: 200, body: { ok: true, data }, cacheSeconds: Math.ceil(ttl / 1000) };
