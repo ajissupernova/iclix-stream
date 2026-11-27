@@ -65,6 +65,9 @@ const id = {
     playSlideshow: "Putar pergantian film",
     pause: "Jeda",
     play: "Putar",
+    seasons: "season",
+    ongoing: "Ongoing",
+    ended: "Ended",
   },
   mediaRow: {
     scrollLeft: (title: string) => `Geser ${title} ke kiri`,
@@ -307,6 +310,9 @@ const en: Copy = {
     playSlideshow: "Play slideshow",
     pause: "Pause",
     play: "Play",
+    seasons: "seasons",
+    ongoing: "Ongoing",
+    ended: "Ended",
   },
   mediaRow: {
     scrollLeft: (title) => `Scroll ${title} left`,

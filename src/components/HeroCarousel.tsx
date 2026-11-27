@@ -65,6 +65,19 @@ export default function HeroCarousel({ items }: { items: HeroTitle[] }) {
   const year = formatYear(active.mediaType === "movie" ? active.release_date : active.first_air_date);
   const runtime = formatDuration(active.mediaType === "movie" ? active.runtime : active.episode_run_time[0] ?? null);
   const genres = active.genres.map((g) => g.name).join(", ");
+  const ageRating = active.mediaType === "movie"
+    ? active.release_dates?.results
+      .flatMap((release) => release.iso_3166_1 === "US" ? release.release_dates : [])
+      .map((release) => release.certification)
+      .find(Boolean)
+    : active.content_ratings?.results.find((rating) => rating.iso_3166_1 === "US")?.rating
+      ?? active.content_ratings?.results.find((rating) => rating.rating)?.rating;
+  const seriesInfo = active.mediaType === "tv"
+    ? [
+        active.number_of_seasons > 0 && `${active.number_of_seasons} ${copy.hero.seasons}`,
+        active.status === "Ended" ? copy.hero.ended : copy.hero.ongoing,
+      ].filter(Boolean).join(" • ")
+    : "";
 
   return (
     <section
@@ -143,7 +156,7 @@ export default function HeroCarousel({ items }: { items: HeroTitle[] }) {
               {active.vote_average.toFixed(1)}
             </span>
           )}
-          <p className="min-w-0 truncate text-paper/90">{[year, runtime, genres].filter(Boolean).join(" • ")}</p>
+          <p className="min-w-0 truncate text-paper/90">{[year, runtime, ageRating, seriesInfo, genres].filter(Boolean).join(" • ")}</p>
           <span className="hidden shrink-0 text-paper/85 sm:inline">
             {copy.hero.originalLanguage}: {formatLanguage(active.original_language)}
           </span>
