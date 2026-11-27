@@ -338,7 +338,7 @@ export default function TvDetail() {
                         {episode.name}
                       </span>
                       {episode.overview && (
-                        <span className="mt-1 block line-clamp-2 text-xs leading-snug text-paper/85 sm:mt-1.5 sm:line-clamp-3 sm:text-sm sm:leading-relaxed">
+                        <span className="mt-1 block max-h-8 overflow-hidden text-xs leading-snug text-paper/85 sm:mt-1.5 sm:max-h-10 sm:text-sm">
                           {episode.overview}
                         </span>
                       )}
