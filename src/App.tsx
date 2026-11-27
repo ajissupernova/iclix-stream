@@ -90,6 +90,24 @@ function AppRoute() {
 }
 
 export default function App() {
+  useEffect(() => {
+    const viewport = window.visualViewport;
+    const root = document.getElementById("root");
+    if (!viewport || !root) return;
+
+    const fitZoomedOutViewport = () => {
+      if (viewport.scale < 1) {
+        root.style.setProperty("--visual-viewport-width", `${viewport.width}px`);
+      } else {
+        root.style.removeProperty("--visual-viewport-width");
+      }
+    };
+
+    fitZoomedOutViewport();
+    viewport.addEventListener("resize", fitZoomedOutViewport);
+    return () => viewport.removeEventListener("resize", fitZoomedOutViewport);
+  }, []);
+
   return (
     <BrowserRouter>
       <LanguageProvider>

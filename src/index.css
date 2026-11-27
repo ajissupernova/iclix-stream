@@ -26,6 +26,10 @@
     color-scheme: dark;
   }
 
+  #root {
+    width: max(100%, var(--visual-viewport-width, 0px));
+  }
+
   body {
     @apply bg-night font-sans text-paper antialiased;
   }
